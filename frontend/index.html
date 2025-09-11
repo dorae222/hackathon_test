@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>유기견 돕기 해커톤 데모</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/css/custom.css" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">🐶 AdoptMe</a>
+      <div class="ms-auto small text-muted">Spring + FastAPI + Bootstrap</div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="row g-4">
+      <div class="col-12 col-lg-8">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-classify-tab" data-bs-toggle="pill" data-bs-target="#pills-classify" type="button" role="tab">품종 분류</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-similar-tab" data-bs-toggle="pill" data-bs-target="#pills-similar" type="button" role="tab">유사 이미지 검색</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-copy-tab" data-bs-toggle="pill" data-bs-target="#pills-copy" type="button" role="tab">입양 문구 생성</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+          <!-- 품종 분류 -->
+          <div class="tab-pane fade show active" id="pills-classify" role="tabpanel">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">강아지 사진 업로드</h5>
+                <div class="dropzone" id="dz-classify">
+                  <input class="form-control" type="file" id="file-classify" accept="image/*" />
+                  <small class="text-muted">이미지를 선택하거나 드래그 앤 드롭하세요</small>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-primary" id="btn-classify">분류 요청</button>
+                  <div id="spinner-classify" class="spinner-border spinner-border-sm d-none" role="status"></div>
+                </div>
+                <div id="preview-classify" class="mt-3"></div>
+                <div id="result-classify" class="mt-3"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 유사 이미지 검색 -->
+          <div class="tab-pane fade" id="pills-similar" role="tabpanel">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">스케치/사진 업로드</h5>
+                <div class="dropzone" id="dz-similar">
+                  <input class="form-control" type="file" id="file-similar" accept="image/*" />
+                  <small class="text-muted">스케치(흑백)도 가능합니다</small>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-success" id="btn-similar">유사 이미지 찾기</button>
+                  <div id="spinner-similar" class="spinner-border spinner-border-sm d-none" role="status"></div>
+                </div>
+                <div id="preview-similar" class="mt-3"></div>
+                <div id="result-similar" class="row row-cols-2 row-cols-md-4 g-3 mt-1"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 입양 문구 생성 -->
+          <div class="tab-pane fade" id="pills-copy" role="tabpanel">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">입양 추천 문구</h5>
+                <div class="row g-3">
+                  <div class="col-12 col-md-4">
+                    <label class="form-label">견종</label>
+                    <input type="text" class="form-control" id="breed" placeholder="Beagle" />
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <label class="form-label">특징(쉼표 구분)</label>
+                    <input type="text" class="form-control" id="traits" placeholder="활발,사교적" />
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <label class="form-label">나이</label>
+                    <input type="text" class="form-control" id="age" placeholder="성견" />
+                  </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <button class="btn btn-warning" id="btn-copy">문구 생성</button>
+                  <div id="spinner-copy" class="spinner-border spinner-border-sm d-none" role="status"></div>
+                </div>
+                <div id="result-copy" class="mt-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <h6 class="card-title">시연 가이드</h6>
+            <ol class="small mb-0">
+              <li>사진 업로드 후 <span class="text-primary">분류</span> → Top‑5 확인</li>
+              <li>스케치 업로드 후 <span class="text-success">유사 이미지</span> 확인</li>
+              <li>견종·특징으로 <span class="text-warning">입양 문구 생성</span></li>
+            </ol>
+          </div>
+        </div>
+        <div class="card shadow-sm">
+          <img src="/img/placeholder-dog.png" class="card-img-top" alt="dog" />
+          <div class="card-body">
+            <p class="small text-muted">Nginx가 정적 파일을 서비스하고, /api/* 는 Spring 으로 프록시 됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">알림</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toast-body">메시지</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
