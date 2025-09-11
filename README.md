@@ -21,10 +21,10 @@ Spring Boot (Gateway) + FastAPI (AI) + Nginx (Frontend Proxy) + Bootstrap UI + D
 - [Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/) 설치
 - 설치 후 Docker Desktop 실행
 - 정상 동작 확인:
-  ```powershell
-  docker --version
-  docker compose version
-````
+   ```powershell
+   docker --version
+   docker compose version
+   ```
 
 #### 2. 저장소 클론
 
@@ -63,10 +63,10 @@ docker compose up -d
 * [Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/) 설치
 * 정상 동작 확인:
 
-  ```bash
-  docker --version
-  docker compose version
-  ```
+   ```bash
+   docker --version
+   docker compose version
+   ```
 
 #### 2. 저장소 클론
 
@@ -106,20 +106,17 @@ docker compose up -d
 ### Real Mode 전환
 
 1. `ai-service/models/` 폴더에 파일 추가:
-
-   * `dog_resnet50_120.pth`
-   * `id2label_120.json`
+    * `dog_resnet50_120.pth`
+    * `id2label_120.json`
 2. `.env` 수정:
-
-   ```env
-   AI_MODE=real
-   OPENAI_API_KEY=sk-xxxx
-   ```
+    ```env
+    AI_MODE=real
+    OPENAI_API_KEY=sk-xxxx
+    ```
 3. AI 서비스 재빌드:
-
-   ```bash
-   docker compose up -d --build ai
-   ```
+    ```bash
+    docker compose up -d --build ai
+    ```
 
 ---
 
@@ -127,30 +124,28 @@ docker compose up -d
 
 1. t3.large 인스턴스 생성 (포트 80/22 오픈)
 2. Docker & Compose 설치:
-
-   ```bash
-   curl -fsSL https://get.docker.com | sh
-   ```
+    ```bash
+    curl -fsSL https://get.docker.com | sh
+    ```
 3. 프로젝트 복사 후 실행:
-
-   ```bash
-   docker compose build
-   docker compose up -d
-   ```
+    ```bash
+    docker compose build
+    docker compose up -d
+    ```
 4. 접속: `http://<EC2_PUBLIC_IP>/`
 
 ---
 
 ## 📝 명령어 요약
 
-| 목적         | Windows PowerShell          | Mac (zsh/bash)              |
-| ---------- | --------------------------- | --------------------------- |
+| 목적           | Windows PowerShell           | Mac (zsh/bash)              |
+| -------------- | --------------------------- | --------------------------- |
 | .env 파일 생성 | `copy .env.example .env`    | `cp .env.example .env`      |
-| 빌드         | `docker compose build`      | `docker compose build`      |
-| 실행         | `docker compose up -d`      | `docker compose up -d`      |
+| 빌드           | `docker compose build`      | `docker compose build`      |
+| 실행           | `docker compose up -d`      | `docker compose up -d`      |
 | 상태 확인      | `docker ps`                 | `docker ps`                 |
 | 로그 확인      | `docker compose logs -f ai` | `docker compose logs -f ai` |
-| 컨테이너 중지    | `docker compose down`       | `docker compose down`       |
+| 컨테이너 중지  | `docker compose down`       | `docker compose down`       |
 
 ---
 
