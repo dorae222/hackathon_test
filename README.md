@@ -18,7 +18,7 @@ Spring Boot (Gateway) + FastAPI (AI) + Nginx (Frontend Proxy) + Bootstrap UI + D
 ### Windows (PowerShell 기준)
 
 #### 1. 필수 설치
-- [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows/) 설치
+- [Docker Desktop for Windows](https://docs.docker.com/desktop/setup/install/windows-install/) 설치
 - 설치 후 Docker Desktop 실행
 - 정상 동작 확인:
   ```powershell
@@ -60,7 +60,7 @@ docker compose up -d
 
 #### 1. 필수 설치
 
-* [Docker Desktop for Mac](https://docs.docker.com/desktop/install/mac/) 설치
+* [Docker Desktop for Mac](https://docs.docker.com/desktop/setup/install/mac-install/) 설치
 * 정상 동작 확인:
 
   ```bash
