@@ -1,58 +1,162 @@
-# Hackathon Template (Spring Boot + FastAPI + Nginx + Bootstrap + Docker Compose)
+# 🐶 Hackathon Test Project
 
-## Quickstart (Local)
-```bash
-cp .env.example .env           # fill values (AI_MODE=fake first)
+Spring Boot (Gateway) + FastAPI (AI) + Nginx (Frontend Proxy) + Bootstrap UI + Docker Compose
+
+---
+
+## 📌 Overview
+해커톤 시연을 위해 빠르게 구축한 풀스택 템플릿입니다.  
+**주요 기능:**
+1. 사진 업로드 → PyTorch `.pth` 모델로 품종 분류
+2. 스케치/사진 업로드 → 유사 이미지 검색 (CLIP+FAISS 확장 가능)
+3. 견종/특징 입력 → OpenAI API 활용 입양 추천 문구 생성
+
+---
+
+## 🚀 Quickstart
+
+### Windows (PowerShell 기준)
+
+#### 1. 필수 설치
+- [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows/) 설치
+- 설치 후 Docker Desktop 실행
+- 정상 동작 확인:
+  ```powershell
+  docker --version
+  docker compose version
+````
+
+#### 2. 저장소 클론
+
+```powershell
+git clone https://github.com/dorae222/hackathon_test.git
+cd hackathon_test
+```
+
+#### 3. 환경 변수 파일 생성
+
+```powershell
+copy .env.example .env
+```
+
+* 처음에는 `AI_MODE=fake`로 시작하세요
+
+#### 4. 빌드 & 실행
+
+```powershell
 docker compose build
 docker compose up -d
-# Open: http://localhost/
 ```
 
-### Switch to real mode (.pth + OpenAI)
-1) Put your model files into `ai-service/models/`:
-   - `dog_resnet50_120.pth`
-   - `id2label_120.json` (e.g., {"0":"Beagle", ...} matching training order)
-2) Edit `.env`:
-   - `AI_MODE=real`
-   - `MODEL_PTH_PATH=/app/models/dog_resnet50_120.pth`
-   - `CLASS_MAP_PATH=/app/models/id2label_120.json`
-   - `OPENAI_API_KEY=...`
-3) Rebuild & run:
+#### 5. 접속
+
+* Frontend: [http://localhost/](http://localhost/)
+* Swagger (Spring): [http://localhost:8080/swagger](http://localhost:8080/swagger)
+* FastAPI Health: [http://localhost:8000/health](http://localhost:8000/health)
+
+---
+
+### Mac (zsh/bash 기준)
+
+#### 1. 필수 설치
+
+* [Docker Desktop for Mac](https://docs.docker.com/desktop/install/mac/) 설치
+* 정상 동작 확인:
+
+  ```bash
+  docker --version
+  docker compose version
+  ```
+
+#### 2. 저장소 클론
+
+```bash
+git clone https://github.com/dorae222/hackathon_test.git
+cd hackathon_test
+```
+
+#### 3. 환경 변수 파일 생성
+
+```bash
+cp .env.example .env
+```
+
+* 처음에는 `AI_MODE=fake`로 시작하세요
+
+#### 4. 빌드 & 실행
+
 ```bash
 docker compose build
 docker compose up -d
 ```
 
-## Endpoints
-- Frontend: `/`
-- Public API (via Spring): `/api/v1/dogs/classify`, `/api/v1/dogs/search-similar`, `/api/v1/text/adoption-copy`
-- AI Health: `/ai/health`
-- Swagger: `/swagger`
+#### 5. 접속
 
-## EC2 Practice (Single instance)
-1. Launch **t3.large** (x86) in your region; open ports **80/22** (or use Session Manager instead of 22).
-2. Install Docker & Compose:
-```bash
-curl -fsSL https://get.docker.com | sh
-sudo usermod -aG docker $USER && newgrp docker
-DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-mkdir -p $DOCKER_CONFIG/cli-plugins
-curl -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-docker compose version
-```
-3. Copy project to the instance and run:
-```bash
-unzip hackathon-template.zip -d ~/app
-cd ~/app/hackathon-template
-cp .env.example .env    # fill OPENAI_API_KEY etc.
-docker compose build
-docker compose up -d
-```
-4. Access `http://EC2_PUBLIC_IP/` from your browser.
+* Frontend: [http://localhost/](http://localhost/)
+* Swagger (Spring): [http://localhost:8080/swagger](http://localhost:8080/swagger)
+* FastAPI Health: [http://localhost:8000/health](http://localhost:8000/health)
 
-> Tip: Use a fixed EBS gp3 (80~100GB) and keep `.env` private. For HTTPS, attach an ALB+ACM later, or add Let's Encrypt to Nginx.
+---
 
-## Notes
-- For GPU, switch base images accordingly and run Compose with `--gpus all`.
-- The similarity search (CLIP+FAISS) is wired for later enabling; prepare an index and update `ai_real.py`.
+## 🔧 Modes
+
+* `AI_MODE=fake` → 빠른 시연용 (랜덤 응답)
+* `AI_MODE=real` → 실제 모델(.pth) + OpenAI API 사용
+
+### Real Mode 전환
+
+1. `ai-service/models/` 폴더에 파일 추가:
+
+   * `dog_resnet50_120.pth`
+   * `id2label_120.json`
+2. `.env` 수정:
+
+   ```env
+   AI_MODE=real
+   OPENAI_API_KEY=sk-xxxx
+   ```
+3. AI 서비스 재빌드:
+
+   ```bash
+   docker compose up -d --build ai
+   ```
+
+---
+
+## ☁️ AWS EC2 연습
+
+1. t3.large 인스턴스 생성 (포트 80/22 오픈)
+2. Docker & Compose 설치:
+
+   ```bash
+   curl -fsSL https://get.docker.com | sh
+   ```
+3. 프로젝트 복사 후 실행:
+
+   ```bash
+   docker compose build
+   docker compose up -d
+   ```
+4. 접속: `http://<EC2_PUBLIC_IP>/`
+
+---
+
+## 📝 명령어 요약
+
+| 목적         | Windows PowerShell          | Mac (zsh/bash)              |
+| ---------- | --------------------------- | --------------------------- |
+| .env 파일 생성 | `copy .env.example .env`    | `cp .env.example .env`      |
+| 빌드         | `docker compose build`      | `docker compose build`      |
+| 실행         | `docker compose up -d`      | `docker compose up -d`      |
+| 상태 확인      | `docker ps`                 | `docker ps`                 |
+| 로그 확인      | `docker compose logs -f ai` | `docker compose logs -f ai` |
+| 컨테이너 중지    | `docker compose down`       | `docker compose down`       |
+
+---
+
+## 🙌 Credits
+
+* Backend: Spring Boot
+* AI Service: FastAPI + PyTorch + OpenAI
+* Frontend: Bootstrap 5
+* Infra: Docker Compose, Nginx
