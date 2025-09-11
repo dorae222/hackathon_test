@@ -2,14 +2,8 @@
 
 Spring Boot (Gateway) + FastAPI (AI) + Nginx (Frontend Proxy) + Bootstrap UI + Docker Compose
 
----
-
-## 📌 Overview
-해커톤 시연을 위해 빠르게 구축한 풀스택 템플릿입니다.  
-**주요 기능:**
-1. 사진 업로드 → PyTorch `.pth` 모델로 품종 분류
-2. 스케치/사진 업로드 → 유사 이미지 검색 (CLIP+FAISS 확장 가능)
-3. 견종/특징 입력 → OpenAI API 활용 입양 추천 문구 생성
+📖 **프로젝트 위키 바로가기:**  
+👉 [https://github.com/dorae222/hackathon_test/wiki](https://github.com/dorae222/hackathon_test/wiki)
 
 ---
 
