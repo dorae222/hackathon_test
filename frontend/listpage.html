@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 추천 강아지 결과</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f7f2ea;
+            color: #4a2c2a;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* ★★★★★ 4. 슬라이더 버튼 색상 스타일 추가 ★★★★★ */
+        .swiper-button-next, .swiper-button-prev {
+            top: 40%;
+            color: #bf7676; /* 사이트 메인 컬러로 변경 */
+        }
+    </style>
+</head>
+<body class="bg-[#f7f2ea]">
+
+    <header class="bg-[#f0d8b6] p-4">
+        </header>
+
+    <main class="container mx-auto py-16 px-4">
+        <h1 class="text-4xl font-extrabold text-center text-[#4a2c2a] mb-4">
+            AI가 찾아낸 회원님의 닮은꼴 강아지 품종 Top 3! 🐶
+        </h1>
+        <p class="text-center text-[#7a574b] text-lg mb-12 max-w-2xl mx-auto">
+            업로드해주신 사진을 바탕으로 AI가 분석한 결과, 회원님과 가장 닮은 품종들입니다.
+        </p>
+
+        <div id="top3" class="flex flex-col md:flex-row justify-center items-stretch gap-8 w-full max-w-6xl mx-auto mb-16"></div>
+        
+        <hr class="my-16 border-t-2 border-[#f0d8b6] w-full max-w-6xl mx-auto">
+
+        <h2 class="text-3xl font-bold text-center text-[#4a2c2a] mb-8">회원님의 라이프스타일에 맞는 친구들도 추천해요! 🐶❤️</h2>
+        
+        <div class="w-full max-w-6xl mx-auto relative">
+            <div class="swiper">
+                <div id="animal-swiper-wrapper" class="swiper-wrapper">
+                    <div class="swiper-slide h-auto pb-4">
+                        <div class="bg-white rounded-2xl overflow-hidden card-shadow transform hover:-translate-y-2 transition duration-300 h-full flex flex-col">
+                            <img src="https://placedog.net/640/480/g" alt="강아지 사진" class="w-full h-56 object-cover">
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-2xl font-bold text-[#4a2c2a] mb-2">콩이</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">믹스견</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">2살 추정</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">암컷</span>
+                                </div>
+                                <div class="bg-[#f0d8b6] p-3 rounded-lg mb-4">
+                                    <p class="text-sm text-[#4a2c2a] font-semibold">💡 <strong>AI 추천 이유:</strong> 반려 경험이 있는 분에게 적합하며, 하루 1시간 이상 산책이 가능한 활동적인 가족에게 최고의 친구가 될 거예요!</p>
+                                </div>
+                                <button href="chatbot.html" class="w-full mt-auto bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-2 px-4 rounded-full transition duration-300">자세히 보기</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-auto pb-4">
+                        <div class="bg-white rounded-2xl overflow-hidden card-shadow transform hover:-translate-y-2 transition duration-300 h-full flex flex-col">
+                            <img src="https://placedog.net/640/480/r" alt="강아지 사진" class="w-full h-56 object-cover">
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-2xl font-bold text-[#4a2c2a] mb-2">밤톨이</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">진도믹스</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">8개월 추정</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">수컷</span>
+                                </div>
+                                <div class="bg-[#f0d8b6] p-3 rounded-lg mb-4">
+                                     <p class="text-sm text-[#4a2c2a] font-semibold">💡 <strong>AI 추천 이유:</strong> 아파트/빌라 환경에 잘 적응할 수 있고, 강아지를 처음 키우시는 분도 쉽게 교감할 수 있는 똑똑한 친구입니다.</p>
+                                </div>
+                                <button href="chatbot.html" class="w-full mt-auto bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-2 px-4 rounded-full transition duration-300">자세히 보기</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-auto pb-4">
+                         <div class="bg-white rounded-2xl overflow-hidden card-shadow transform hover:-translate-y-2 transition duration-300 h-full flex flex-col">
+                            <img src="https://placedog.net/640/480/b" alt="강아지 사진" class="w-full h-56 object-cover">
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-2xl font-bold text-[#4a2c2a] mb-2">해피</h3>
+                                 <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">푸들</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">5살 추정</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">수컷</span>
+                                </div>
+                                 <div class="bg-[#f0d8b6] p-3 rounded-lg mb-4">
+                                     <p class="text-sm text-[#4a2c2a] font-semibold">💡 <strong>AI 추천 이유:</strong> 다른 반려동물과도 잘 지내는 사교성을 가졌어요. 자녀가 있는 가정에 활기를 불어넣어 줄 똑똑한 친구랍니다.</p>
+                                </div>
+                                <button href="chatbot.html" class="w-full mt-auto bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-2 px-4 rounded-full transition duration-300">자세히 보기</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-auto pb-4">
+                        <div class="bg-white rounded-2xl overflow-hidden card-shadow transform hover:-translate-y-2 transition duration-300 h-full flex flex-col">
+                            <img src="https://placedog.net/640/480/y" alt="강아지 사진" class="w-full h-56 object-cover">
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-2xl font-bold text-[#4a2c2a] mb-2">메리</h3>
+                                 <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">진돗개</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">3살 추정</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">암컷</span>
+                                </div>
+                                 <div class="bg-[#f0d8b6] p-3 rounded-lg mb-4">
+                                     <p class="text-sm text-[#4a2c2a] font-semibold">💡 <strong>AI 추천 이유:</strong> 넓은 마당이 있는 주택에서 충분히 활동하며 행복하게 지낼 수 있는 듬직한 친구를 찾고 계신가요?</p>
+                                </div>
+                                <button href="chatbot.html" class="w-full mt-auto bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-2 px-4 rounded-full transition duration-300">자세히 보기</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide h-auto pb-4">
+                        <div class="bg-white rounded-2xl overflow-hidden card-shadow transform hover:-translate-y-2 transition duration-300 h-full flex flex-col">
+                           <img src="https://placedog.net/640/480/o" alt="강아지 사진" class="w-full h-56 object-cover">
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-2xl font-bold text-[#4a2c2a] mb-2">토리</h3>
+                                 <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">말티즈</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">4살 추정</span>
+                                    <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">수컷</span>
+                                </div>
+                                 <div class="bg-[#f0d8b6] p-3 rounded-lg mb-4">
+                                     <p class="text-sm text-[#4a2c2a] font-semibold">💡 <strong>AI 추천 이유:</strong> 조용하고 사랑스러운 실내견을 선호하며, 따뜻한 보살핌을 주실 분에게 완벽한 파트너가 될 거예요.</p>
+                                </div>
+                                <button href="chatbot.html" class="w-full mt-auto bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-2 px-4 rounded-full transition duration-300">자세히 보기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-button-next" ></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </main>
+
+    <footer class="bg-[#7a574b] text-white py-8 rounded-t-3xl mt-16"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        const AI_BASE = '/ai'; // nginx proxies /ai -> ai-service
+        function findField(infoArr, key){
+            for (const row of infoArr){
+                if (row[0] === key) return row[1] || '';
+                if (row[2] === key) return row[3] || '';
+            }
+            return '';
+        }
+
+        function shuffle(arr){
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        async function loadAnimals(){
+            const res = await fetch(`${AI_BASE}/animals`);
+            let data = await res.json();
+            // 섞어서 표시 (항상 같은 카드만 보이지 않도록)
+            data = shuffle(data);
+
+            // Top 3 영역을 실제 데이터로 구성 (현재는 상위 3개 노출)
+            const top3Wrap = document.getElementById('top3');
+            top3Wrap.innerHTML = '';
+            data.slice(0, 3).forEach((item, idx) => {
+                const name = findField(item.info, '이름') || '이름 미상';
+                const breed = findField(item.info, '품종') || '품종 미상';
+                const age = findField(item.info, '나이(추정)') || '';
+                const gender = findField(item.info, '성별') || '';
+                const img = item.thumbnail || (item.gallery && item.gallery[0]) || (item.images_mapped && item.images_mapped[0]) || (item.images && item.images[0]) || '';
+                const rank = idx === 1 ? 1 : (idx === 0 ? 2 : 3);
+                const badgeColor = rank === 1 ? 'bg-yellow-500' : (rank === 2 ? 'bg-slate-500' : 'bg-orange-700');
+                const card = document.createElement('div');
+                card.className = `flex-1 bg-white rounded-2xl overflow-hidden card-shadow transform hover:-translate-y-2 transition duration-300 flex flex-col ${idx===1 ? 'scale-105 z-10 order-1 md:order-2' : (idx===0 ? 'order-2 md:order-1' : 'order-3 md:order-3')}`;
+                card.innerHTML = `
+                    <div class="relative p-4">
+                        <img src="${img}" alt="${name}" class="w-full h-48 object-cover bg-gray-50 rounded-lg" onerror="this.onerror=null; this.src='/assets/dog-placeholder.svg'">
+                        <div class="absolute top-0 right-0 mt-3 mr-3 ${badgeColor} text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl shadow-lg">${rank}</div>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow text-center">
+                        <h3 class="text-2xl font-bold text-[#4a2c2a]">${name}</h3>
+                        <div class="flex flex-wrap gap-2 my-3 justify-center">
+                            <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${breed}</span>
+                            ${age?`<span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${age}</span>`:''}
+                            ${gender?`<span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${gender}</span>`:''}
+                        </div>
+                        <button data-id="${item.id}" class="detail-btn w-full mt-auto bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-2 px-4 rounded-full transition duration-300">자세히 보기</button>
+                    </div>
+                `;
+                top3Wrap.appendChild(card);
+            });
+            top3Wrap.querySelectorAll('.detail-btn').forEach(btn => {
+                btn.addEventListener('click', (e)=>{
+                    const id = e.currentTarget.getAttribute('data-id');
+                    window.location.href = `/chatbot.html?id=${id}`;
+                });
+            });
+            const wrapper = document.getElementById('animal-swiper-wrapper');
+            wrapper.innerHTML = '';
+            // 캐러셀도 섞인 순서대로
+            data.forEach((item)=>{
+                const name = findField(item.info, '이름') || '이름 미상';
+                const breed = findField(item.info, '품종') || '품종 미상';
+                const age = findField(item.info, '나이(추정)') || '';
+                const gender = findField(item.info, '성별') || '';
+                const img = item.thumbnail || (item.gallery && item.gallery[0]) || (item.images_mapped && item.images_mapped[0]) || (item.images && item.images[0]) || '';
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide h-auto pb-4';
+                slide.innerHTML = `
+                    <div class="bg-white rounded-2xl overflow-hidden card-shadow transform hover:-translate-y-2 transition duration-300 h-full flex flex-col">
+                        <img src="${img}" alt="강아지 사진" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='/assets/dog-placeholder.svg'">
+                        <div class="p-6 flex flex-col flex-grow">
+                            <h3 class="text-2xl font-bold text-[#4a2c2a] mb-2">${name}</h3>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${breed}</span>
+                                <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${age}</span>
+                                <span class="bg-gray-200 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">${gender}</span>
+                            </div>
+                            <button data-id="${item.id}" class="detail-btn w-full mt-auto bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-2 px-4 rounded-full transition duration-300">자세히 보기</button>
+                        </div>
+                    </div>`;
+                wrapper.appendChild(slide);
+            });
+            wrapper.querySelectorAll('.detail-btn').forEach(btn => {
+                btn.addEventListener('click', (e)=>{
+                    const id = e.currentTarget.getAttribute('data-id');
+                    window.location.href = `/chatbot.html?id=${id}`;
+                });
+            });
+            new Swiper('.swiper', {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                breakpoints: { 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 } },
+                loop: true,
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAnimals);
+    </script>
+</body>
+</html>

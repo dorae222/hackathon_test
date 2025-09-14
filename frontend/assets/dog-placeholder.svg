@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" rx="24" fill="#f3f4f6"/>
+  <g transform="translate(130,120)">
+    <circle cx="120" cy="140" r="60" fill="#d1d5db"/>
+    <circle cx="420" cy="140" r="60" fill="#d1d5db"/>
+    <rect x="180" y="200" width="200" height="120" rx="60" fill="#d1d5db"/>
+    <circle cx="280" cy="340" r="18" fill="#a3a3a3"/>
+  </g>
+  <text x="400" y="560" text-anchor="middle" font-family="'Noto Sans KR', sans-serif" font-size="24" fill="#9ca3af">이미지를 불러올 수 없어요</text>
+</svg>

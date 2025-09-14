@@ -1,0 +1,22 @@
+{
+  "Beagle": 0,
+  "Bichon Frise": 1,
+  "Border Collie": 2,
+  "Chihuahua": 3,
+  "ChowChow": 4,
+  "Cocker Spaniel": 5,
+  "Dachshund": 6,
+  "Doberman": 7,
+  "Golden Retriever": 8,
+  "Jindo Dog": 9,
+  "Maltese": 10,
+  "Pembroke Welsh Corgi": 11,
+  "Pomeranian": 12,
+  "Pug": 13,
+  "Samoyed": 14,
+  "Shiba Inu": 15,
+  "Shih Tzu": 16,
+  "Siberian Husky": 17,
+  "Toy Poodle": 18,
+  "Yorkshire Terrier": 19
+}

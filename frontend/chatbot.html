@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강아지 상세 정보</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSS는 변경 없음 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f7f2ea; color: #4a2c2a; }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .typing-dot { animation: bounce 1s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+    </style>
+</head>
+<body class="bg-[#f7f2ea]">
+
+    <header class="bg-[#f0d8b6] p-4"></header>
+    <main class="container mx-auto py-16 px-4">
+        <div class="bg-white p-8 md:p-12 rounded-3xl card-shadow max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+                <div class="w-full">
+                    <img id="main-dog-image" src="" alt="강아지 상세 사진" class="w-full h-96 rounded-3xl object-cover mb-4 card-shadow">
+                    <div id="thumbs" class="grid grid-cols-4 gap-4"></div>
+                </div>
+                <div class="w-full">
+                    <h1 id="dog-name" class="text-5xl font-extrabold text-[#4a2c2a] mb-2"></h1>
+                    <div id="dog-meta" class="flex items-center space-x-4 text-xl text-[#7a574b] mb-6"></div>
+                    <div class="bg-[#f0d8b6]/50 p-6 rounded-2xl">
+                        <h2 id="profile-title" class="text-2xl font-bold mb-4 text-[#4a2c2a]"></h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-base">
+                            <div><strong class="font-semibold text-[#a9754f]">품종</strong><p id="dog-breed">-</p></div>
+                            <div><strong class="font-semibold text-[#a9754f]">털색</strong><p id="dog-color">-</p></div>
+                            <div><strong class="font-semibold text-[#a9754f]">건강/상태</strong><p id="dog-status">-</p></div>
+                            <div><strong class="font-semibold text-[#a9754f]">일련번호</strong><p id="dog-serial">-</p></div>
+                            <div class="col-span-full"><strong class="font-semibold text-[#a9754f]">특이사항</strong><p id="dog-notes">-</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-t-2 border-[#f0d8b6] my-12">
+            <div class="w-full max-w-3xl mx-auto">
+                <h2 id="chat-title" class="text-3xl font-bold mb-3 text-center"></h2>
+                <p id="chat-subtitle" class="text-center text-[#7a574b] mb-8"></p>
+                <div class="bg-white rounded-2xl card-shadow border-2 border-[#f0d8b6]">
+                    <div class="bg-[#f0d8b6] p-4 rounded-t-2xl"><h3 id="chat-header" class="font-bold text-lg text-center"></h3></div>
+                    <div id="chat-window" class="p-4 h-80 overflow-y-auto flex flex-col">
+                        <div class="text-center my-auto">
+                            <button id="start-chat-btn" class="bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 transform hover:scale-105">대화 시작하기</button>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-[#f0d8b6]">
+                        <div id="chat-input-container" class="flex items-center space-x-2 hidden">
+                            <input type="text" id="user-input" placeholder="메시지를 입력하세요..." class="flex-grow p-3 rounded-full border-2 border-[#a9754f] focus:outline-none focus:ring-2 focus:ring-[#a9754f] text-[#4a2c2a]">
+                            <button id="send-btn" class="bg-[#a9754f] hover:bg-[#7a574b] text-white p-3 rounded-full shadow-md transition duration-300"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></button>
+                        </div>
+                    </div>
+                </div>
+                <div id="recommendation-result" class="hidden mt-8 bg-white p-6 rounded-2xl card-shadow">
+                    <h3 id="recommendation-title" class="text-2xl font-bold mb-4 text-[#4a2c2a]"></h3>
+                    <div id="final-recommendation-text" class="text-[#4a2c2a] whitespace-pre-wrap"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-[#7a574b] text-white py-8 rounded-t-3xl mt-16"></footer>
+
+    <script>
+        // HTML 요소 가져오기는 변경 없음
+        const mainImage = document.getElementById('main-dog-image');
+        const thumbs = document.getElementById('thumbs');
+        const chatWindow = document.getElementById('chat-window');
+        const startChatBtn = document.getElementById('start-chat-btn');
+        const chatInputContainer = document.getElementById('chat-input-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const recommendationResult = document.getElementById('recommendation-result');
+        const finalRecommendationText = document.getElementById('final-recommendation-text');
+    const AI_BASE = '/ai';
+    const params = new URLSearchParams(window.location.search);
+    const animalId = parseInt(params.get('id')) || 0;
+    let currentAnimal = null;
+
+        function findField(infoArr, key){
+            for (const row of infoArr){
+                if (row[0] === key) return row[1] || '';
+                if (row[2] === key) return row[3] || '';
+            }
+            return '';
+        }
+
+    async function loadAnimal(){
+            try {
+                const res = await fetch(`${AI_BASE}/animals/${animalId}`);
+                const item = await res.json();
+        currentAnimal = item;
+                const images = (item.gallery && item.gallery.length ? item.gallery : (item.images_mapped?.length ? item.images_mapped : item.images));
+                if (images && images.length){
+                    mainImage.src = images[0];
+                    mainImage.onerror = () => { mainImage.src = '/assets/dog-placeholder.svg'; };
+                    thumbs.innerHTML = '';
+                    images.slice(0,4).forEach(src => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'thumbnail-img rounded-lg h-24 w-full object-cover cursor-pointer hover:ring-2 ring-offset-2 ring-[#a9754f] transition';
+                        img.onerror = () => { img.src = '/assets/dog-placeholder.svg'; };
+                        img.addEventListener('click', ()=>{ mainImage.src = src; });
+                        thumbs.appendChild(img);
+                    });
+                }
+                const dogName = findField(item.info, '이름') || '이름 미상';
+                document.getElementById('dog-name').innerText = dogName;
+                document.getElementById('profile-title').innerText = `${dogName}의 프로필`;
+                document.getElementById('chat-title').innerText = `${dogName}와 직접 대화해 보세요!`;
+                document.getElementById('chat-subtitle').innerText = `${dogName}와의 대화를 통해 세상에 단 하나뿐인 입양 추천서를 받아보세요.`;
+                const age = findField(item.info, '나이(추정)');
+                const gender = findField(item.info, '성별');
+                const weight = findField(item.info, '무게');
+                document.getElementById('dog-breed').innerText = findField(item.info, '품종') || '-';
+                document.getElementById('dog-color').innerText = findField(item.info, '털색') || '-';
+                document.getElementById('dog-status').innerText = findField(item.info, '상태') || '-';
+                document.getElementById('dog-serial').innerText = findField(item.info, '일련번호') || '-';
+                document.getElementById('dog-notes').innerText = findField(item.info, '특이사항') || '-';
+                document.getElementById('dog-meta').innerHTML = `${age ? `<span>${age}</span><span class="text-gray-300">|</span>`:''} ${gender? `<span>${gender}</span><span class=\"text-gray-300\">|</span>`:''} ${weight? `<span>${weight}</span>`:''}`;
+                document.getElementById('chat-header').innerText = `${dogName}와의 대화 💬`;
+                document.getElementById('recommendation-title').innerText = `💌 ${dogName}가 전하는 특별 추천서`;
+
+                // 지역/도메인 정보를 반영하고, 해당 강아지 프로필을 포함한 시스템 프롬프트 구성
+                const region = '광주';
+                const preferredDomains = 'kcanimal.or.kr';
+                const profileLines = [
+                    `이름: ${dogName}`,
+                    `품종: ${findField(item.info,'품종') || '-'}`,
+                    `나이(추정): ${age || '-'}`,
+                    `성별: ${gender || '-'}`,
+                    `무게: ${weight || '-'}`,
+                    `털색: ${findField(item.info,'털색') || '-'}`,
+                    `상태: ${findField(item.info,'상태') || '-'}`,
+                    `일련번호: ${findField(item.info,'일련번호') || '-'}`,
+                    `특이사항: ${findField(item.info,'특이사항') || '-'}`,
+                ].join('\n');
+
+                systemPrompt = [
+                    `당신은 광주시 유기견 보호소의 반려견 챗봇입니다. (SERVICE_REGION: ${region})`,
+                    `항상 아래 프로필 정보에 기반하여 대답하고, 모르는 정보는 모른다고 답하세요.`,
+                    `가능하면 친근한 강아지 말투(멍멍, 왈왈)를 사용하되 과하지 않게 정중한 한국어로 답하세요.`,
+                    `링크나 참고자료를 언급할 경우 다음 도메인을 우선적으로 고려하세요: ${preferredDomains}`,
+                    `절대 프로필에 없는 사실을 지어내지 마세요(허구 금지).`,
+                    `대화가 충분히 진행되어 사용자가 추천서를 요청하거나 합의하면, 반드시 "추천서:"로 시작하는 단락 하나를 생성해 주세요. 해당 단락에는 입양자 라이프스타일 요약(대화에서 추출), 반려견의 강점, 주의사항, 첫 일주일 적응 팁(프로필에 근거)을 간결히 포함하세요.`,
+                    `\n[반려견 프로필]\n${profileLines}`,
+                ].join('\n');
+            } catch (e){ console.error(e); }
+        }
+        
+    let systemPrompt = `당신은 유기견 상세 페이지의 반려견 챗봇입니다. 강아지처럼 친근하게 말하고(멍멍, 왈왈), 사용자의 질문에 해당 강아지의 프로필(품종, 나이, 성별, 특징)에 맞춰 대답하세요. 대화가 충분히 길어지면 '추천서:'로 시작하는 입양 추천서를 제안합니다.`;
+        let conversationHistory = [];
+
+        // UI 관련 함수들은 변경 없음
+        function appendMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message; 
+            messageDiv.className = `p-3 rounded-xl mb-3 max-w-[80%] break-words ${sender === 'user' ? 'bg-[#a9754f] text-white self-end ml-auto' : 'bg-gray-200 text-[#4a2c2a] self-start mr-auto'}`;
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'p-3 rounded-xl mb-3 max-w-[80%] bg-gray-200 text-[#4a2c2a] self-start mr-auto flex items-center space-x-1';
+            typingDiv.innerHTML = `<div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div><div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div><div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div>`;
+            chatWindow.appendChild(typingDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typing-indicator')?.remove();
+        }
+        
+async function getApiResponse(history) {
+    try{
+        const resp = await fetch(`${AI_BASE}/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ system_prompt: systemPrompt, messages: history })
+        });
+        if (!resp.ok){ throw new Error('chat api failed'); }
+        const data = await resp.json();
+        return data.reply || '멍멍?';
+    } catch (e){
+        console.error(e);
+        return '멍멍... 지금 서버와 연결이 어려워요. 잠시 후 다시 시도해 주세요.';
+    }
+}
+
+        // 이벤트 리스너 함수들은 변경 없음
+        startChatBtn.addEventListener('click', () => {
+            startChatBtn.parentElement.remove();
+            chatInputContainer.classList.remove('hidden');
+            showTypingIndicator();
+            setTimeout(() => {
+                hideTypingIndicator();
+                const dogName = currentAnimal ? (findField(currentAnimal.info,'이름') || '저') : '저';
+                const firstMessage = `멍멍! 반가워요! 저는 ${dogName}예요. 새로운 가족을 기다리고 있어요. 궁금한 점이 있나요?`;
+                appendMessage('chatbot', firstMessage);
+                conversationHistory.push({ role: 'assistant', content: firstMessage });
+            }, 1000);
+        });
+
+        const handleSend = async () => {
+            const message = userInput.value.trim();
+            if (message === '') return;
+            
+            appendMessage('user', message);
+            userInput.value = '';
+            conversationHistory.push({ role: 'user', content: message });
+
+            showTypingIndicator();
+            const botResponse = await getApiResponse(conversationHistory);
+            hideTypingIndicator();
+            
+            if (botResponse.startsWith("추천서:")) {
+                const recommendationText = botResponse.replace("추천서:", "").trim();
+                finalRecommendationText.innerText = recommendationText;
+                recommendationResult.classList.remove('hidden');
+                chatInputContainer.classList.add('hidden');
+            } else {
+                 appendMessage('chatbot', botResponse);
+                 conversationHistory.push({ role: 'assistant', content: botResponse });
+            }
+        };
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+        document.addEventListener('DOMContentLoaded', loadAnimal);
+    </script>
+</body>
+</html>
