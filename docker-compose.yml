@@ -28,6 +28,7 @@ services:
       - NUM_WORKERS=${NUM_WORKERS}
       - GUNICORN_WORKERS=${GUNICORN_WORKERS}
     volumes:
+      - ./ai-vision-service/data:/app/data:ro
       - ./ai-vision-service/index:/app/index
       - ./ai-vision-service/models:/app/models
     ports:
