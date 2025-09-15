@@ -5,8 +5,8 @@ services:
     build: ./ai-chatbot
     env_file: ./.env
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_MODEL=${OPENAI_MODEL}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL}
     ports:
       - "8001:8001"
 
@@ -14,36 +14,36 @@ services:
     build: ./ai-vision-service
     env_file: ./.env
     environment:
-      - AI_MODE=${AI_MODE}
-      - MODEL_PTH_PATH=${MODEL_PTH_PATH}
-      - CLASS_MAP_PATH=${CLASS_MAP_PATH}
-      - NUM_CLASSES=${NUM_CLASSES}
-      - TRAIN_ON_START=${TRAIN_ON_START}
-      - PRETRAINED=${PRETRAINED}
-      - FREEZE_BACKBONE=${FREEZE_BACKBONE}
-      - MAX_TRAIN_SAMPLES=${MAX_TRAIN_SAMPLES}
-      - EPOCHS=${EPOCHS}
-      - BATCH_SIZE=${BATCH_SIZE}
-      - LR=${LR}
-      - NUM_WORKERS=${NUM_WORKERS}
-      - GUNICORN_WORKERS=${GUNICORN_WORKERS}
+      AI_MODE: ${AI_MODE}
+      MODEL_PTH_PATH: ${MODEL_PTH_PATH}
+      CLASS_MAP_PATH: ${CLASS_MAP_PATH}
+      NUM_CLASSES: ${NUM_CLASSES}
+      TRAIN_ON_START: ${TRAIN_ON_START}
+      PRETRAINED: ${PRETRAINED}
+      FREEZE_BACKBONE: ${FREEZE_BACKBONE}
+      MAX_TRAIN_SAMPLES: ${MAX_TRAIN_SAMPLES}
+      EPOCHS: ${EPOCHS}
+      BATCH_SIZE: ${BATCH_SIZE}
+      LR: ${LR}
+      NUM_WORKERS: ${NUM_WORKERS}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS}
     volumes:
       - ./ai-vision-service/data:/app/data:ro
       - ./ai-vision-service/index:/app/index
       - ./ai-vision-service/models:/app/models
     ports:
-      - "${AI_PORT}:8000"
+      - "${AI_PORT:-8000}:8000"
 
   spring:
     build: ./backend-spring
     env_file: ./.env
     environment:
-      - AI_BASE_URL=${AI_BASE_URL}
-      - SPRING_PORT=${SPRING_PORT}
+      AI_BASE_URL: ${AI_BASE_URL}
+      SPRING_PORT: ${SPRING_PORT}
     depends_on:
       - ai-vision
     ports:
-      - "${SPRING_PORT}:8080"
+      - "${SPRING_PORT:-8081}:8080"
 
   nginx:
     build: ./nginx
@@ -53,6 +53,6 @@ services:
       - ai-vision
       - spring
     ports:
-      - "${NGINX_PORT}:80"
+      - "${NGINX_PORT:-8080}:80"
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
