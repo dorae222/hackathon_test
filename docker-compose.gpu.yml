@@ -1,0 +1,17 @@
+services:
+  ai-vision:
+    build:
+      context: ./ai-vision-service
+      dockerfile: Dockerfile.gpu
+    # NVIDIA GPU reservation (Compose v3+ via deploy)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      TORCH_DEVICE: cuda
+    # Optional: ensure linux/amd64 platform
+    platform: ${GPU_PLATFORM:-linux/amd64}
