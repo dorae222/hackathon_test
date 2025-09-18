@@ -6,7 +6,10 @@ Endpoints:
 - GET /animals/{id}
 - GET /images/{filename}
 - POST /classify (multipart image)
-- POST /chat (OpenAI-backed)
+
+Through Nginx (default config):
+- /ai/* → ai-vision (this service)
+- /ai/chat → ai-chatbot service
 
 Training:
 - Dataset: `app/dog_breed/<ClassName>/*`
