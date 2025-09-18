@@ -1,5 +1,5 @@
 server:
-  port: ${SPRING_PORT:8080}
+  port: 8080
 ai:
   base-url: ${AI_BASE_URL:http://localhost:8000}
 management:

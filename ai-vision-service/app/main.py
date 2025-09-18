@@ -13,7 +13,7 @@ from .model import load_model, predict_image
 APP_DIR = Path(__file__).resolve().parent
 DATA_DIR = APP_DIR.parent / "data"
 IMAGES_DIR = DATA_DIR / "images"
-ANIMALS_JSON = DATA_DIR / "animal_data.json"
+ANIMALS_JSON = DATA_DIR / "animal_data_with_size.json"
 MODELS_DIR = APP_DIR.parent / "models"
 MODEL_PTH = Path(os.getenv("MODEL_PTH_PATH", MODELS_DIR / "dog_breed_classifier.pth"))
 CLASS_MAP_PATH = Path(os.getenv("CLASS_MAP_PATH", MODELS_DIR / "class_map.json"))
@@ -59,7 +59,7 @@ def health():
 @app.get("/animals")
 def list_animals():
     """
-    Returns animals from animal_data.json with stable ids and image URLs that always work.
+    Returns animals from animal_data_with_size.json with stable ids and image URLs that always work.
 
     Fields added per item:
     - id: stable index-based id

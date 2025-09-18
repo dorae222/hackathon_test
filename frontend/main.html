@@ -3,172 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>댕댕이의 새 가족 찾기</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+    <title>시작하기 - 나의 운명의 강아지 찾기</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f7f2ea;
-            color: #4a2c2a;
-        }
-        .card-shadow {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .swiper-button-next, .swiper-button-prev {
-            color: #a9754f;
-        }
-        .swiper-pagination-bullet-active {
-            background-color: #a9754f;
-        }
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+        html, body { height: 100%; margin: 0; font-family: 'Pretendard', sans-serif; background-color: #FFFBF5; display: flex; justify-content: center; align-items: center; }
+        .screen-container { background-color: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 380px; box-sizing: border-box; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07); text-align: center; }
+        .illustration { font-size: 70px; margin-bottom: 20px; }
+        h1 { font-size: 26px; font-weight: 900; color: #333; margin-bottom: 10px; }
+        p { font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 30px; }
+        .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; background-color: #FF7A00; color: white; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.2s ease-in-out; box-shadow: 0 4px 10px rgba(255, 122, 0, 0.3); }
+        .btn:hover { background-color: #E66A00; transform: translateY(-2px); }
     </style>
-</head>
-<body class="bg-[#f7f2ea]">
-
-    <header class="bg-[#f0d8b6] p-4">
-        <nav class="container mx-auto flex justify-between items-center">
-            <a href="/main.html" class="flex items-center space-x-2 text-[#4a2c2a] font-bold text-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#a9754f]" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M5.53 10.158c.78-.797 2.05-.797 2.83 0l.54.54a2 2 0 010 2.83l-1.39 1.39a2 2 0 01-2.83 0l-1.39-1.39a2 2 0 010-2.83l1.74-1.74zM14.47 9.842c-.78-.797-2.05-.797-2.83 0l-.54.54a2 2 0 000 2.83l1.39 1.39a2 2 0 002.83 0l1.39-1.39a2 2 0 000-2.83l-1.74-1.74zM9.54 12.56a2 2 0 012.83 0l1.39 1.39a2 2 0 010 2.83l-1.74 1.74c-.78-.797-2.05-.797-2.83 0l-1.39-1.39a2 2 0 010-2.83l1.74-1.74z" />
-                </svg>
-                <span>댕댕이의 새 가족 찾기</span>
-            </a>
-            <div class="space-x-4">
-                <a href="#" class="text-[#4a2c2a] hover:text-[#a9754f] transition duration-300">서비스 소개</a>
-                <a href="#" class="text-[#4a2c2a] hover:text-[#a9754f] transition duration-300">입양 후기</a>
-            </div>
-        </nav>
-    </header>
-
-    <section class="bg-[#f7f2ea] py-20 text-center">
-        <div class="container mx-auto px-4 max-w-3xl">
-            <h1 class="text-5xl font-extrabold text-[#4a2c2a] mb-6 leading-tight">
-                나와 <span class="text-[#a9754f]">가장 잘 맞는 댕댕이</span>를 <br class="hidden md:inline"> AI가 찾아줄게요!
-            </h1>
-            <p class="text-xl text-[#7a574b] mb-10 leading-relaxed">
-                간단한 설문과 사진 한 장으로, 당신의 라이프스타일에 딱 맞는 <br class="hidden md:inline"> 소중한 가족을 만나보세요.
-            </p>
-            <a href="/checklist.html" class="inline-block bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-4 px-12 rounded-full shadow-lg transition duration-300 transform hover:scale-105 text-xl">
-                나의 이상형 강아지 찾기 시작하기!
-            </a>
-        </div>
-    </section>
-
-    <section class="py-16 bg-[#f7f2ea]">
-        <div class="container mx-auto px-4 max-w-6xl">
-            <h2 class="text-3xl font-bold text-center text-[#4a2c2a] mb-10">
-                사랑스러운 친구들이 여러분을 기다려요!
-            </h2>
-            <div class="swiper-container relative">
-                <div id="home-swiper" class="swiper-wrapper pb-10"></div>
-                <div class="swiper-pagination"></div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-16 bg-[#f7f2ea]">
-        <div class="container mx-auto px-4 max-w-4xl text-center">
-            <h2 class="text-3xl font-bold text-[#4a2c2a] mb-10">어떻게 강아지를 추천해 주나요?</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-2xl card-shadow flex flex-col items-center">
-                    <div class="bg-[#f0d8b6] p-3 rounded-full mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#a9754f]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#4a2c2a] mb-3">1. 설문 참여</h3>
-                    <p class="text-[#7a574b]">간단한 설문을 통해 당신의 라이프스타일을 분석해요.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl card-shadow flex flex-col items-center">
-                    <div class="bg-[#f0d8b6] p-3 rounded-full mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#a9754f]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#4a2c2a] mb-3">2. 사진 업로드</h3>
-                    <p class="text-[#7a574b]">좋아하는 강아지 사진을 올리면 AI가 분석해 드려요.</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl card-shadow flex flex-col items-center">
-                    <div class="bg-[#f0d8b6] p-3 rounded-full mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#a9754f]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#4a2c2a] mb-3">3. 맞춤 추천</h3>
-                    <p class="text-[#7a574b]">분석 결과를 바탕으로 최적의 댕댕이를 추천해 드려요!</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="bg-[#7a574b] text-white py-8 rounded-t-3xl mt-16">
-        <div class="container mx-auto text-center text-sm">
-            <p>&copy; 2025 댕댕이의 새 가족 찾기. All rights reserved.</p>
-            <div class="mt-4 space-x-4">
-                <a href="#" class="hover:text-gray-300">이용약관</a>
-                <a href="#" class="hover:text-gray-300">개인정보처리방침</a>
-                <a href="#" class="hover:text-gray-300">고객센터</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const AI_BASE = '/ai';
-        function findField(infoArr, key){
-            for (const row of infoArr){
-                if (row[0] === key) return row[1] || '';
-                if (row[2] === key) return row[3] || '';
-            }
-            return '';
+        // Ensure / redirects to this landing page
+        if (location.pathname === '/' || location.pathname === '/index.html') {
+            // no-op: nginx already serves index.html which redirects to main.html
         }
-
-        function getRandomSample(arr, n){
-            const copy = arr.slice();
-            for (let i = copy.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [copy[i], copy[j]] = [copy[j], copy[i]];
-            }
-            return copy.slice(0, n);
-        }
-
-        async function loadHomeSwiper(){
-            try{
-                const res = await fetch(`${AI_BASE}/animals`);
-                const data = await res.json();
-                const wrap = document.getElementById('home-swiper');
-                wrap.innerHTML = '';
-                // 무작위 6개 샘플 노출 (매번 동일한 카드만 보이지 않도록)
-                const picks = getRandomSample(data, Math.min(6, data.length));
-                picks.forEach(item => {
-                    const name = findField(item.info, '이름') || '이름 미상';
-                    const breed = findField(item.info, '품종') || '';
-                    const img = item.thumbnail || (item.gallery && item.gallery[0]) || (item.images_mapped && item.images_mapped[0]) || (item.images && item.images[0]) || '';
-                    const slide = document.createElement('div');
-                    slide.className = 'swiper-slide h-auto';
-                    slide.innerHTML = `
-                        <div class="bg-white rounded-3xl overflow-hidden card-shadow h-full flex flex-col">
-                            <div class="w-full h-80 bg-gray-100 flex items-center justify-center">
-                                <img src="${img}" alt="${name}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/assets/dog-placeholder.svg'">
-                            </div>
-                            <div class="p-6 text-left">
-                                <h3 class="text-2xl font-bold text-[#4a2c2a] mb-2">${name}</h3>
-                                <p class="text-lg text-[#7a574b]">${breed || '관심이 필요해요'} · <a href="/chatbot.html?id=${item.id}" class="text-[#a9754f] underline">자세히 보기</a></p>
-                            </div>
-                        </div>`;
-                    wrap.appendChild(slide);
-                });
-
-                new Swiper('.swiper-container', {
-                    loop: true,
-                    autoplay: { delay: 5000, disableOnInteraction: false },
-                    slidesPerView: 1,
-                    spaceBetween: 20,
-                    breakpoints: { 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 40 } },
-                    pagination: { el: '.swiper-pagination', clickable: true },
-                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-                });
-            }catch(e){ console.error(e); }
-        }
-
-        document.addEventListener('DOMContentLoaded', loadHomeSwiper);
     </script>
+    </head>
+<body>
+    <div class="screen-container">
+        <div class="illustration">👋🐶</div>
+        <h1>나의 운명의 강아지를 찾기 위한 첫걸음!</h1>
+        <p>
+            간단한 체크리스트와 AI 분석을 통해<br>
+            당신과 평생을 함께할 가족을 찾아드릴게요.
+        </p>
+        <button class="btn" onclick="window.location.href='/checklist.html';">운명의 강아지 찾기 시작!</button>
+    </div>
 </body>
 </html>

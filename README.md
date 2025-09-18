@@ -63,7 +63,7 @@ docker compose build
 docker compose up -d
 ```
 
-4) 접속 URL (기본값)
+4) 접속 URL (기본 .env 기준)
 - 웹 프론트(Nginx): http://localhost:8080
 - Spring Swagger: http://localhost:8081/swagger
 - AI Vision Health: http://localhost:8000/health
@@ -88,14 +88,19 @@ docker compose logs -f ai-chatbot
 
 - nginx: 정적 파일 서빙(frontend/) + 리버스 프록시(컨테이너 80, 호스트 기본 8080)
     - / → 정적 페이지(index.html 등)
-    - /api/* → Spring(8080)
+    - /api/* → Spring(컨테이너 8080 → 호스트 기본 8081)
     - /ai/chat → ai-chatbot(:8001)/chat
     - /ai/* → ai-vision(:8000)
-- backend-spring: 비즈니스 API 게이트웨이(컨테이너 8080, 호스트 기본 8081)
+- backend-spring: 비즈니스 API 게이트웨이(컨테이너 8080 → 호스트 기본 8081)
+ 
 - ai-vision-service: 이미지 목록/서빙, 분류(기본 8000)
 - ai-chatbot: OpenAI 연동 챗 API(기본 8001)
 
 모든 포트는 `.env`로 조정할 수 있습니다. 기본값은 `.env.example` 참고.
+본 저장소의 기본 설정은 다음과 같습니다(호스트 기준):
+- NGINX_PORT=8080 (정적 웹/리버스 프록시)
+- SPRING_PORT=8081 (Spring Boot)
+- AI_PORT=8000 (ai-vision)
 
 ---
 
@@ -138,16 +143,16 @@ docker compose logs -f ai-chatbot
 
 ---
 
-## 모드 전환: AI_MODE
+## 모델 준비와 데모 실행
 
-- fake: 데모용 더미 응답(빠름, 외부 의존성 없음)
-- real: 실제 모델(.pth) 및 OpenAI 키 필요
-
-real 모드 사용 시
-- `ai-vision-service/models` 폴더에 모델/클래스맵 배치
-    - dog_breed_classifier.pth
-    - class_map.json
-- `.env`에서 `AI_MODE=real` 설정 및 필요 시 `OPENAI_API_KEY` 지정
+- 기본 동작: ai-vision은 컨테이너 내 `models/`에 있는 학습된 모델(.pth)과 `class_map.json`을 사용합니다.
+- 모델 파일 배치:
+    - `ai-vision-service/models/dog_breed_classifier.pth`
+    - `ai-vision-service/models/class_map.json`
+- 빠른 데모(선택): 모델이 없을 경우, 매우 간단한 셋업으로 임시 학습을 수행할 수 있습니다.
+    - `.env`에서 `TRAIN_ON_START=1` 설정 (기본은 0)
+    - 샘플 수/에폭 등은 다음 변수로 제어: `MAX_TRAIN_SAMPLES`, `EPOCHS`, `BATCH_SIZE`, `PRETRAINED`, `FREEZE_BACKBONE`
+    - 데모 목적 외에는 실제 학습 파이프라인을 권장합니다.
 
 ---
 
@@ -169,8 +174,36 @@ real 모드 사용 시
 ## 트러블슈팅 요약
 
 - 502 Bad Gateway: 대상 서비스 컨테이너 상태 및 로그 확인 → 재시작
-- 8000/8080 포트 충돌: `.env`에서 포트 변경 후 재시작
+- 8000/8080/8081 포트 충돌: `.env`에서 포트 변경 후 재시작
 - OpenAI 오류: `OPENAI_API_KEY` 설정 여부, 요청량 및 네트워크 점검
+
+### Windows에서 8080(또는 특정 포트) 충돌 해결
+
+1) 어떤 프로세스가 점유 중인지 확인
+
+```powershell
+netstat -aon | Select-String ":8080"
+```
+
+2) 출력의 마지막 열(PID)을 확인한 후, 강제 종료(일반 프로세스인 경우)
+
+```powershell
+taskkill /PID <PID> /F
+```
+
+3) 서비스가 점유 중(IIS 등)이라면 서비스 중지 후 재시작
+
+```powershell
+Get-Service W3SVC | Stop-Service -Force
+# 필요 시 다시 시작: Get-Service W3SVC | Start-Service
+```
+
+4) 컨테이너 재시작
+
+```powershell
+docker compose down
+docker compose up -d
+```
 
 ---
 

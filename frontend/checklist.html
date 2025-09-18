@@ -3,219 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 이상형 강아지 찾기</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>체크리스트 - 나의 운명의 강아지 찾기</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f7f2ea;
-            color: #4a2c2a;
-        }
-        .card-shadow {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .prediction { margin: 10px 0; padding: 10px; background-color: #f9f9f9; border-radius: 5px; }
-        .prediction-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 5px; overflow: hidden; }
-        .prediction-bar { height: 20px; background-color: #a9754f; border-radius: 5px; text-align: right; color: white; line-height: 20px; padding-right: 5px; transition: width 0.5s ease-in-out; }
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+        html, body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #FFFBF5; display: flex; justify-content: center; padding-top: 40px; padding-bottom: 40px; }
+        .screen-container { background-color: white; border-radius: 20px; padding: 30px; width: 100%; max-width: 380px; box-sizing: border-box; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07); }
+        .progress-bar { font-size: 14px; color: #aaa; text-align: center; margin-bottom: 25px; font-weight: 500; }
+        .progress-bar span { font-weight: bold; color: #FF7A00; }
+        .question-title { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 20px; color: #333; }
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px; }
+        .option-card { border: 2px solid #ddd; border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; transition: all 0.2s ease-in-out; font-weight: 500; }
+        .option-card .icon { font-size: 24px; margin-bottom: 8px; }
+        .option-card:hover, .option-card.selected { border-color: #FF7A00; background-color: #FFF5E1; transform: translateY(-3px); font-weight: bold; }
+        .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; background-color: #FF7A00; color: white; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .btn:hover { background-color: #E66A00; }
     </style>
 </head>
-<body class="bg-[#f7f2ea]">
+<body>
+    <div class="screen-container">
+        <div class="progress-bar"><span>1단계: 책임감 체크리스트</span> → 2단계 → 3단계</div>
 
-    <!-- Header -->
-    <header class="bg-[#f0d8b6] p-4">
-        <nav class="container mx-auto flex justify-between items-center">
-            <a href="/main.html" class="flex items-center space-x-2 text-[#4a2c2a] font-bold text-xl">
-                <!-- Paw icon SVG -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#a9754f]" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M5.53 10.158c.78-.797 2.05-.797 2.83 0l.54.54a2 2 0 010 2.83l-1.39 1.39a2 2 0 01-2.83 0l-1.39-1.39a2 2 0 010-2.83l1.74-1.74zM14.47 9.842c-.78-.797-2.05-.797-2.83 0l-.54.54a2 2 0 000 2.83l1.39 1.39a2 2 0 002.83 0l1.39-1.39a2 2 0 000-2.83l-1.74-1.74zM9.54 12.56a2 2 0 012.83 0l1.39 1.39a2 2 0 010 2.83l-1.74 1.74c-.78.797-2.05.797-2.83 0l-1.39-1.39a2 2 0 010-2.83l1.74-1.74z" />
-                </svg>
-                <span>댕댕이의 새 가족 찾기</span>
-            </a>
-            <div class="space-x-4">
-                <a href="#" class="text-[#4a2c2a] hover:text-[#a9754f] transition duration-300">서비스 소개</a>
-                <a href="#" class="text-[#4a2c2a] hover:text-[#a9754f] transition duration-300">입양 후기</a>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container mx-auto py-16 px-4">
-        <h1 class="text-4xl font-extrabold text-center text-[#4a2c2a] mb-4">
-            나의 이상형 강아지 찾기
-        </h1>
-        <p class="text-center text-[#7a574b] text-lg mb-12">
-            몇 가지 질문에 답하고, 좋아하는 강아지 사진을 올려주세요.
-        </p>
-
-        <div class="bg-white p-8 md:p-12 rounded-3xl card-shadow max-w-4xl mx-auto">
-            <form id="recommend-form" action="/listpage.html" method="post" enctype="multipart/form-data">
-                <!-- Section 1: Checklist -->
-                <div class="mb-12">
-    <h2 class="text-2xl font-bold text-[#4a2c2a] mb-6">입양자님의 정보를 알려주세요! ✅</h2>
-
-    <div class="mb-8">
-        <label class="block text-xl font-semibold mb-3 text-[#4a2c2a]">👤 성별</label>
-        <div class="flex flex-wrap gap-4">
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="adopter_gender" value="male" class="form-radio text-[#a9754f]">
-                <span>남자</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="adopter_gender" value="female" class="form-radio text-[#a9754f]">
-                <span>여자</span>
-            </label>
+        <div class="question-title">보호자의 성별을 알려주세요.</div>
+        <div class="option-grid">
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🙋‍♂️</div><div>남성</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🙋‍♀️</div><div>여성</div></div>
         </div>
+
+        <div class="question-title">어떤 환경에서 함께하게 되나요?</div>
+        <div class="option-grid">
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🏡</div><div>마당 있는 집</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🏢</div><div>아파트/빌라</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🏘️</div><div>원룸</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🤷</div><div>기타</div></div>
+        </div>
+
+        <div class="question-title">누구와 함께 살고 계신가요?</div>
+        <div class="option-grid">
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">👤</div><div>혼자 살아요</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">👨‍👩‍👧‍👦</div><div>가족과 함께</div></div>
+        </div>
+
+        <div class="question-title">하루에 얼마나 함께 있을 수 있나요?</div>
+        <div class="option-grid">
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">☀️</div><div>거의 하루 종일</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🌙</div><div>주로 저녁에만</div></div>
+        </div>
+
+        <div class="question-title">산책은 얼마나 자주 시켜줄 수 있나요?</div>
+        <div class="option-grid">
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🐕‍🦺💨</div><div>하루에 2번 이상</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🚶‍♂️</div><div>하루에 1번</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🏞️</div><div>주말에 집중적으로</div></div>
+            <div class="option-card" onclick="toggleSelect(this)"><div class="icon">🐾</div><div>필요할 때 가끔</div></div>
+        </div>
+
+        <button class="btn" onclick="window.location.href='/upload.html';">모두 답했어요!</button>
     </div>
-
-    <div class="mb-8">
-        <label class="block text-xl font-semibold mb-3 text-[#4a2c2a]">🏡 주거 환경</label>
-        <div class="flex flex-wrap gap-4">
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="housing" value="house_with_yard" class="form-radio text-[#a9754f]">
-                <span>마당 있는 단독주택</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="housing" value="apartment" class="form-radio text-[#a9754f]">
-                <span>아파트/빌라</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="housing" value="studio" class="form-radio text-[#a9754f]">
-                <span>원룸/오피스텔</span>
-            </label>
-        </div>
-    </div>
-
-    <div class="mb-8">
-        <label class="block text-xl font-semibold mb-3 text-[#4a2c2a]">👨‍👩‍👧‍👦 가족 구성 (다중 선택 가능)</label>
-        <div class="flex flex-wrap gap-4">
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="checkbox" name="family" value="single" class="form-checkbox rounded text-[#a9754f]">
-                <span>1인 가구</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="checkbox" name="family" value="children" class="form-checkbox rounded text-[#a9754f]">
-                <span>자녀 있음</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="checkbox" name="family" value="seniors" class="form-checkbox rounded text-[#a9754f]">
-                <span>가족과 함께 거주</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="checkbox" name="family" value="other_pets" class="form-checkbox rounded text-[#a9754f]">
-                <span>다른 반려동물 있음</span>
-            </label>
-        </div>
-    </div>
-
-    <div class="mb-8">
-        <label class="block text-xl font-semibold mb-3 text-[#4a2c2a]">📘 반려 경험</label>
-        <div class="flex flex-wrap gap-4">
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="experience" value="experienced" class="form-radio text-[#a9754f]">
-                <span>경험 있음</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="experience" value="beginner" class="form-radio text-[#a9754f]">
-                <span>처음 키워봄 (초보)</span>
-            </label>
-        </div>
-    </div>
-    
-    <div class="mb-8">
-        <label class="block text-xl font-semibold mb-3 text-[#4a2c2a]">⏱️ 하루 평균 산책 가능 시간</label>
-        <div class="flex flex-wrap gap-4">
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="walk_time" value="short" class="form-radio text-[#a9754f]">
-                <span>30분 이하</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="walk_time" value="medium" class="form-radio text-[#a9754f]">
-                <span>30분 ~ 1시간</span>
-            </label>
-            <label class="flex items-center space-x-2 bg-[#f0d8b6] px-4 py-2 rounded-full cursor-pointer hover:bg-[#a9754f] hover:text-white transition duration-200">
-                <input type="radio" name="walk_time" value="long" class="form-radio text-[#a9754f]">
-                <span>1시간 이상</span>
-            </label>
-        </div>
-    </div>
-</div>
-
-                <div class="mb-12">
-                    <h2 class="text-2xl font-bold text-[#4a2c2a] mb-6">사진으로도 찾아볼까요?</h2>
-                    
-                    <div class="w-full">
-                        <label for="image-input" class="cursor-pointer">
-                            <div id="image-placeholder" class="w-full h-64 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 hover:bg-gray-100 hover:border-[#a9754f] transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <p class="font-semibold">클릭하여 이미지 업로드</p>
-                                <p class="text-sm">또는 파일을 여기로 드래그하세요</p>
-                            </div>
-                            <img id="preview" class="hidden w-full h-64 object-contain rounded-2xl">
-                        </label>
-                        <input type="file" id="image-input" name="image" class="hidden" accept="image/*">
-                    </div>
-                </div>
-
-                <div class="text-center">
-                    <button type="submit" class="inline-block bg-[#a9754f] hover:bg-[#7a574b] text-white font-bold py-3 px-12 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
-                        딱 맞는 강아지 추천받기
-                    </button>
-                </div>
-            </form>
-        </div>
-    </main>
-
-    <footer class="bg-[#7a574b] text-white py-8 rounded-t-3xl mt-16">
-        <div class="container mx-auto text-center text-sm">
-            <p>&copy; 2025 댕댕이의 새 가족 찾기. All rights reserved.</p>
-            <div class="mt-4 space-x-4">
-                <a href="#" class="hover:text-gray-300">이용약관</a>
-                <a href="#" class="hover:text-gray-300">개인정보처리방침</a>
-                <a href="#" class="hover:text-gray-300">고객센터</a>
-            </div>
-        </div>
-    </footer>
 
     <script>
-        const imageInput = document.getElementById('image-input');
-        const imagePlaceholder = document.getElementById('image-placeholder');
-        const preview = document.getElementById('preview');
-    const form = document.getElementById('recommend-form');
-
-        // 이미지 미리보기 기능
-        imageInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    preview.src = event.target.result;
-                    imagePlaceholder.classList.add('hidden');
-                    preview.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // 폼 제출 이벤트 리스너
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault(); // 기본 제출 동작 방지
-
-            console.log('폼이 제출되었습니다. 데이터를 서버로 전송합니다.');
-            // 로딩 스피너를 보여주는 로직을 여기에 추가할 수 있습니다.
-
-            const formData = new FormData(form);
-            
-            // 현재는 서버 로직 없이 리스트 페이지로 이동하여 JS가 데이터를 로드합니다.
-            window.location.href = form.action;
-        });
+        function toggleSelect(element){
+            const parent = element.parentElement;
+            const siblings = parent.querySelectorAll('.option-card');
+            siblings.forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
     </script>
 </body>
 </html>
