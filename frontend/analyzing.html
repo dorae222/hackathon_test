@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 분석 중... - 나의 운명의 강아지 찾기</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+        html, body { height: 100%; margin: 0; font-family: 'Pretendard', sans-serif; background-color: #FFFBF5; display: flex; justify-content: center; align-items: center; }
+        .screen-container { background-color: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 380px; box-sizing: border-box; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07); text-align: center; }
+        .analysis-view { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .photo-box { width: 120px; height: 120px; border-radius: 15px; background-color: #f0f0f0; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 2px solid #ddd; position: relative; }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-box .label { font-size: 14px; font-weight: bold; color: #555; position: absolute; bottom: -25px; }
+        .scanner { width: 50px; height: 50px; position: relative; }
+        .scanner .dot { position: absolute; width: 8px; height: 8px; background: #FF7A00; border-radius: 50%; opacity: 0; animation: move 2s infinite; }
+        .scanner .dot:nth-child(2) { animation-delay: 0.5s; }
+        .scanner .dot:nth-child(3) { animation-delay: 1s; }
+        @keyframes move { 0% { transform: translateX(-20px) scale(0.5); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateX(20px) scale(0.5); opacity: 0; } }
+        #dog-photo-img { animation: fadeInOut 1s infinite; }
+        @keyframes fadeInOut { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .status-text { font-size: 18px; font-weight: 500; color: #333; margin-bottom: 20px; }
+        .progress-bar-container { width: 100%; height: 12px; background-color: #eee; border-radius: 6px; overflow: hidden; }
+        .progress-bar-fill { width: 0%; height: 100%; background-color: #FF7A00; border-radius: 6px; animation: fillProgress 3500ms linear forwards; }
+        @keyframes fillProgress { from { width: 0%; } to { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="screen-container">
+        <div class="analysis-view">
+            <div class="photo-box"><img src="https://placehold.co/120x120/E6F0FF/333?text=User&font=pretendard" alt="사용자 사진"><div class="label">당신</div></div>
+            <div class="scanner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <div class="photo-box"><img id="dog-photo-img" src="https://placehold.co/120x120/F8D5A2/333?text=Dog1&font=pretendard" alt="강아지 사진"><div class="label">친구들</div></div>
+        </div>
+        <p class="status-text">AI가 당신과 가장 닮은 친구를 찾고 있어요...</p>
+        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+    </div>
+    <script>
+        const dogPhotoElement = document.getElementById('dog-photo-img');
+        const dogImages = [
+            'https://placehold.co/120x120/F8D5A2/333?text=Dog1&font=pretendard',
+            'https://placehold.co/120x120/A2F8B5/333?text=Dog2&font=pretendard',
+            'https://placehold.co/120x120/F8A2A2/333?text=Dog3&font=pretendard',
+            'https://placehold.co/120x120/A2A9F8/333?text=Dog4&font=pretendard'
+        ];
+        let idx = 0;
+        setInterval(()=>{ idx = (idx+1)%dogImages.length; dogPhotoElement.src = dogImages[idx]; }, 1000);
+        setTimeout(()=>{ window.location.href = '/listpage.html'; }, 3600);
+    </script>
+</body>
+</html>

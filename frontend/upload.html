@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 업로드 - 나의 운명의 강아지 찾기</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+        html, body { height: 100%; margin: 0; font-family: 'Pretendard', sans-serif; background-color: #FFFBF5; display: flex; justify-content: center; align-items: center; }
+        .screen-container { background-color: white; border-radius: 20px; padding: 30px 40px; width: 100%; max-width: 380px; box-sizing: border-box; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07); text-align: center; }
+        .progress-bar { font-size: 14px; color: #aaa; text-align: center; margin-bottom: 25px; font-weight: 500; }
+        .progress-bar span { font-weight: bold; color: #FF7A00; }
+        .encouragement-text { font-size: 16px; color: #555; line-height: 1.6; margin-bottom: 25px; }
+        .upload-box { border: 2px dashed #ccc; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; cursor: pointer; transition: background-color 0.2s; min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .upload-box:hover { background-color: #f9f9f9; }
+        .upload-box .icon { font-size: 40px; color: #FF7A00; margin-bottom: 10px; }
+        .upload-box p { font-size: 16px; font-weight: 500; color: #333; margin-bottom: 20px; }
+        .upload-btn { display: inline-block; padding: 12px 25px; border: none; border-radius: 8px; background-color: #555; color: white; font-size: 15px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
+        .upload-btn:hover { background-color: #333; }
+        .privacy-note { font-size: 13px; color: #888; }
+        #image-preview { max-width: 100%; max-height: 250px; border-radius: 8px; }
+        #next-btn { display: none; width: 100%; padding: 16px; border: none; border-radius: 12px; background-color: #FF7A00; color: white; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="screen-container">
+        <div class="progress-bar">1단계 → <span>2단계: AI 닮은꼴 분석</span> → 3단계</div>
+        <div class="upload-box" id="upload-box" onclick="document.getElementById('fileInput').click()">
+            <div id="initial-content">
+                <div class="icon">📷</div>
+                <p><strong>당신과 닮은 운명의 아이를 찾기 위해<br>정면 얼굴 사진을 올려주세요.</strong></p>
+                <button class="upload-btn" type="button">사진 선택하기</button>
+            </div>
+            <img id="image-preview" src="#" alt="미리보기 이미지">
+        </div>
+        <p class="privacy-note">ⓘ 사진은 닮은꼴 분석에만 사용되며, 분석 후 즉시 서버에서 완전히 폐기돼요.</p>
+        <button id="next-btn" type="button">AI로 분석 시작하기</button>
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+    </div>
+
+    <script>
+        const AI_BASE = '/ai';
+        const fileInput = document.getElementById('fileInput');
+        const uploadBox = document.getElementById('upload-box');
+        const initialContent = document.getElementById('initial-content');
+        const imagePreview = document.getElementById('image-preview');
+        const nextBtn = document.getElementById('next-btn');
+
+        imagePreview.style.display = 'none';
+        let selectedFile = null;
+
+        fileInput.addEventListener('change', function(){
+            const file = this.files[0];
+            if (!file) return;
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                initialContent.style.display = 'none';
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadBox.style.padding = '10px';
+                uploadBox.style.borderStyle = 'solid';
+                nextBtn.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        nextBtn.addEventListener('click', async () => {
+            if (!selectedFile){
+                alert('사진을 먼저 선택해 주세요.');
+                return;
+            }
+            const form = new FormData();
+            form.append('image', selectedFile);
+            try{
+                const resp = await fetch(`${AI_BASE}/classify`, { method: 'POST', body: form });
+                if (!resp.ok) throw new Error('분석 요청 실패');
+                const data = await resp.json();
+                sessionStorage.setItem('classifyResult', JSON.stringify(data));
+            } catch (e){
+                console.warn('분석 실패, 임의 추천으로 진행합니다.', e);
+                sessionStorage.removeItem('classifyResult');
+            }
+            window.location.href = '/analyzing.html';
+        });
+    </script>
+</body>
+</html>
