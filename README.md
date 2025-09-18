@@ -45,7 +45,7 @@ Spring Boot(백엔드) + FastAPI(이미지/챗봇 AI) + Nginx(정적/리버스 �
 
 ---
 
-## 빠른 시작(macOS zsh 기준)
+## 빠른 시작
 
 1) 필수 설치 확인
 - Docker Desktop 설치 후 버전 확인
@@ -63,10 +63,12 @@ docker compose build
 docker compose up -d
 ```
 
-4) 접속 URL
-- 웹 프론트: http://localhost/
-- Spring Swagger: http://localhost:8080/swagger
+4) 접속 URL (기본값)
+- 웹 프론트(Nginx): http://localhost:8080
+- Spring Swagger: http://localhost:8081/swagger
 - AI Vision Health: http://localhost:8000/health
+
+포트가 이미 사용 중이면 `.env`에서 변경 후 재기동하세요. 예) Nginx가 8080 충돌 시 `NGINX_PORT=8085` 설정
 
 문제 시 로그 보기
 ```bash
@@ -84,12 +86,12 @@ docker compose logs -f ai-chatbot
 
 ## 구성 요소와 포트
 
-- nginx: 정적 파일 서빙(frontend/) + 리버스 프록시(기본 80)
+- nginx: 정적 파일 서빙(frontend/) + 리버스 프록시(컨테이너 80, 호스트 기본 8080)
     - / → 정적 페이지(index.html 등)
     - /api/* → Spring(8080)
     - /ai/chat → ai-chatbot(:8001)/chat
     - /ai/* → ai-vision(:8000)
-- backend-spring: 비즈니스 API 게이트웨이(기본 8080)
+- backend-spring: 비즈니스 API 게이트웨이(컨테이너 8080, 호스트 기본 8081)
 - ai-vision-service: 이미지 목록/서빙, 분류(기본 8000)
 - ai-chatbot: OpenAI 연동 챗 API(기본 8001)
 
@@ -101,7 +103,7 @@ docker compose logs -f ai-chatbot
 
 - 공통
     - ENV=dev, TZ=Asia/Seoul
-    - NGINX_PORT=80, SPRING_PORT=8080, AI_PORT=8000
+    - NGINX_PORT=8080, SPRING_PORT=8081, AI_PORT=8000, AI_CHATBOT_PORT=8001
 - Spring → AI 내부 호출 URL
     - AI_BASE_URL=http://ai-vision:8000
 - AI Vision(이미지 분류)
@@ -113,7 +115,26 @@ docker compose logs -f ai-chatbot
     - OPENAI_API_KEY= (필요 시 입력)
     - OPENAI_MODEL=gpt-4o-mini
 
-모든 항목의 예시는 `.env.example`를 확인하세요.
+모든 항목의 예시는 `.env.example`를 확인하세요. Windows에서 8080은 종종 다른 프로세스(예: Oracle TNS Listener)가 사용 중일 수 있어 충돌 시 `NGINX_PORT`를 다른 값(예: 8085)으로 변경하세요.
+
+---
+
+## CPU/GPU 실행 가이드
+
+- CPU(기본, 모든 OS):
+    - ai-vision은 CPU 전용 PyTorch 휠을 사용해 경량 이미지로 동작합니다.
+    - 실행: `docker compose up -d ai-vision`
+
+- GPU(Linux/WSL2, NVIDIA):
+    - 사전 조건: NVIDIA 드라이버 + nvidia-container-toolkit 설치
+    - GPU 오버레이 사용:
+        ```powershell
+        docker compose -f docker-compose.yml -f docker-compose.gpu.yml build ai-vision
+        docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d ai-vision
+        ```
+    - 컨테이너 내부에서 `import torch; torch.cuda.is_available()`로 CUDA 인식 확인 가능
+
+- macOS: Docker는 호스트 GPU에 접근할 수 없으므로 CPU로 자동 동작합니다. (도커 밖 네이티브 실행 시 MPS 사용 가능)
 
 ---
 
