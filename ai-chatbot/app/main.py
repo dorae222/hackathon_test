@@ -22,11 +22,17 @@ class ChatByAnimalRequest(BaseModel):
     model: Optional[str] = None
 
 def _build_client_and_model(model: Optional[str]):
+    """
+    Returns (client, model_name, is_fake)
+    - If OPENAI_API_KEY is missing, returns (None, "local-fake", True)
+    - Otherwise returns real OpenAI client.
+    """
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY not set")
+        # Dev-friendly fallback to keep UI working without external key
+        return None, "local-fake", True
     client = OpenAI(api_key=api_key)
-    return client, (model or os.getenv("OPENAI_MODEL", "gpt-4o-mini"))
+    return client, (model or os.getenv("OPENAI_MODEL", "gpt-4o-mini")), False
 
 def _vision_base_url() -> str:
     # When running in docker-compose, the service name resolves in the bridge network
@@ -45,6 +51,26 @@ def _extract_field(info_list, key: str) -> str:
             return row[3] or ""
     return ""
 
+
+def _fake_llm_reply(messages: List[dict], system_prompt: Optional[str] = None) -> str:
+    """Very small local stub to simulate an assistant in dev.
+    Echoes the last user message with a friendly Korean persona.
+    """
+    user_text = ""
+    for m in reversed(messages):
+        if m.get("role") == "user":
+            user_text = m.get("content", "")
+            break
+    intro = "안녕하세요, 반가워요! 저는 임시 챗봇이에요(오프라인 모드). "
+    if system_prompt:
+        intro += "(프로필 기반 답변을 흉내 내는 중) "
+    if not user_text:
+        return intro + "무엇이든 편하게 물어보세요. 멍! 🐶"
+    return (
+        f"{intro}방금 이렇게 말씀하셨어요: '{user_text}'. "
+        "지금은 간단한 데모 모드라 상세한 답변은 어렵지만, 필요한 주제를 더 알려주시면 최대한 도와볼게요! 🐾"
+    )
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
@@ -52,15 +78,16 @@ def health():
 @app.post("/chat")
 async def chat(req: ChatRequest):
     try:
-        client, model_name = _build_client_and_model(req.model)
+        client, model_name, is_fake = _build_client_and_model(req.model)
         msgs = []
         if req.system_prompt:
             msgs.append({"role":"system","content":req.system_prompt})
         msgs.extend([m.model_dump() for m in req.messages])
-        
-        resp = client.chat.completions.create(model=model_name, messages=msgs)
-        reply = resp.choices[0].message.content or ""
-        
+        if is_fake:
+            reply = _fake_llm_reply(msgs, req.system_prompt)
+        else:
+            resp = client.chat.completions.create(model=model_name, messages=msgs)
+            reply = resp.choices[0].message.content or ""
         return {"reply": reply}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Chat failed: {e}")
@@ -120,13 +147,16 @@ async def chat_by_animal(animal_id: int = Path(..., ge=0), req: ChatByAnimalRequ
         ])
 
         # 2) Call OpenAI
-        client, model_name = _build_client_and_model(req.model if req else None)
+        client, model_name, is_fake = _build_client_and_model(req.model if req else None)
         msgs = [{"role": "system", "content": system_prompt}]
         if req and req.messages:
             msgs.extend([m.model_dump() for m in req.messages])
 
-        resp = client.chat.completions.create(model=model_name, messages=msgs)
-        reply = resp.choices[0].message.content or ""
+        if is_fake:
+            reply = _fake_llm_reply(msgs, system_prompt)
+        else:
+            resp = client.chat.completions.create(model=model_name, messages=msgs)
+            reply = resp.choices[0].message.content or ""
         return {"reply": reply}
     except httpx.HTTPError as he:
         raise HTTPException(status_code=502, detail=f"Failed to fetch animal profile: {he}")
