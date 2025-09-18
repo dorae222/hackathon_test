@@ -83,6 +83,8 @@ ai-vision-service/models/
 # But keep directory placeholders
 !ai-vision-service/data/.gitkeep
 !ai-vision-service/models/.gitkeep
+# Track specific curated dataset file
+!ai-vision-service/data/animal_data_with_size.json
 
 # Temporary files
 tmp/
