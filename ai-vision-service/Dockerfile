@@ -1,25 +1,32 @@
 FROM python:3.11-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+	PYTHONUNBUFFERED=1 \
+	PIP_NO_CACHE_DIR=1 \
+	PYTHONPATH=/app
+
 WORKDIR /app
 
-# Install bash for entrypoint and clean up apt lists
+# Install only what's needed and clean up in the same layer
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends bash \
+	&& apt-get install -y --no-install-recommends bash libgl1 libglib2.0-0 \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY app/requirements.txt .
+# Dependencies first for better caching
+COPY app/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
+# App code
 COPY app/ ./app/
 
-# Ensure entrypoint has LF line endings in case of CRLF on Windows checkouts
-RUN sed -i 's/\r$//' app/entrypoint.sh \
-	&& chmod +x app/entrypoint.sh
+# Normalize line endings and permissions for entrypoint
+RUN sed -i 's/\r$//' app/entrypoint.sh && chmod +x app/entrypoint.sh \
+	&& mkdir -p /app/data /app/models /app/index \
+	&& chown -R root:root /app
 
-# Create expected directories even if not copied at build-time
-RUN mkdir -p /app/data /app/models /app/index
+# Optional: Drop privileges (gunicorn can run as a non-root user)
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
 
-ENV PYTHONPATH=/app
 EXPOSE 8000
-
 CMD ["./app/entrypoint.sh"]
