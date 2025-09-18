@@ -65,7 +65,7 @@ def build_dataloaders() -> Tuple[DataLoader, Dict[str, int]]:
 
 
 def train():
-    device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
     loader, class_to_idx = build_dataloaders()
 
     num_classes = len(class_to_idx)

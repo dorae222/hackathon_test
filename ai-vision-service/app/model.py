@@ -13,7 +13,7 @@ def load_model(model_path, num_labels):
     Loads a trained EfficientNet-B5 model, ensuring architecture matches the state dict.
     """
     device = torch.device(
-        "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
+        "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
     model = models.efficientnet_b5(weights=None)
 
