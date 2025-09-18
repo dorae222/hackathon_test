@@ -44,7 +44,7 @@
         </main>
         <footer class="chat-input-area">
             <input type="text" id="user-input" placeholder="메시지를 입력하세요...">
-            <button id="send-btn">🚀</button>
+            <button id="send-btn" type="button">🚀</button>
         </footer>
         <div class="back-to-list"><a href="/listpage.html">🏠 다른 친구들 보러가기</a></div>
     </div>
@@ -56,8 +56,9 @@
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         const dogNameEl = document.getElementById('dog-name');
-        const dogAvatarEl = document.getElementById('dog-avatar');
-        let history = [];
+    const dogAvatarEl = document.getElementById('dog-avatar');
+    let history = [];
+    let isSending = false; // 중복 전송 방지 플래그
 
         function findField(infoArr, key){
             if (!Array.isArray(infoArr)) return '';
@@ -85,6 +86,8 @@
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
         function showTyping(){
+            // 중복 표시 방지
+            hideTyping();
             const typing = document.createElement('div');
             typing.className = 'typing-indicator';
             typing.innerHTML = '<span></span><span></span><span></span>';
@@ -110,24 +113,39 @@
             }
         }
         async function handleSend(){
+            if (isSending) return; // 이미 전송 중이면 무시
             const text = userInput.value.trim();
             if (!text) return;
-            appendBubble(text, 'user');
-            userInput.value = '';
-            history.push({ role: 'user', content: text });
-            showTyping();
-            const reply = await sendToApi();
-            hideTyping();
-            if (reply.startsWith('추천서:')){
-                appendBubble('추천서가 준비되었어요. 아래 내용을 참고해 주세요!', 'dog');
-                appendBubble(reply.replace('추천서:','').trim(), 'dog');
-            } else {
-                appendBubble(reply, 'dog');
-                history.push({ role: 'assistant', content: reply });
+            isSending = true;
+            sendBtn.disabled = true;
+            try {
+                appendBubble(text, 'user');
+                userInput.value = '';
+                history.push({ role: 'user', content: text });
+                showTyping();
+                const reply = await sendToApi();
+                hideTyping();
+                if (reply.startsWith('추천서:')){
+                    appendBubble('추천서가 준비되었어요. 아래 내용을 참고해 주세요!', 'dog');
+                    appendBubble(reply.replace('추천서:','').trim(), 'dog');
+                } else {
+                    appendBubble(reply, 'dog');
+                    history.push({ role: 'assistant', content: reply });
+                }
+            } finally {
+                isSending = false;
+                sendBtn.disabled = false;
             }
         }
         sendBtn.addEventListener('click', handleSend);
-        userInput.addEventListener('keydown', (e)=>{ if (e.key==='Enter'){ e.preventDefault(); handleSend(); }});
+        userInput.addEventListener('keydown', (e)=>{
+            // IME 조합 중(한글 입력 등) 또는 전송 중일 때는 무시
+            if (e.isComposing || isSending) return;
+            if (e.key==='Enter'){
+                e.preventDefault();
+                handleSend();
+            }
+        });
         document.addEventListener('DOMContentLoaded', loadHeader);
     </script>
 </body>
