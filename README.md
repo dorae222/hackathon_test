@@ -64,11 +64,11 @@ docker compose up -d
 ```
 
 4) 접속 URL (기본 .env 기준)
-- 웹 프론트(Nginx): http://localhost:8080
+- 웹 프론트(Nginx): http://localhost:8085
 - Spring Swagger: http://localhost:8081/swagger
 - AI Vision Health: http://localhost:8000/health
 
-포트가 이미 사용 중이면 `.env`에서 변경 후 재기동하세요. 예) Nginx가 8080 충돌 시 `NGINX_PORT=8085` 설정
+포트가 이미 사용 중이면 `.env`에서 변경 후 재기동하세요. 예) 기본 8085가 충돌 시 `NGINX_PORT=8090` 등 다른 값으로 설정
 
 문제 시 로그 보기
 ```bash
@@ -86,7 +86,7 @@ docker compose logs -f ai-chatbot
 
 ## 구성 요소와 포트
 
-- nginx: 정적 파일 서빙(frontend/) + 리버스 프록시(컨테이너 80, 호스트 기본 8080)
+- nginx: 정적 파일 서빙(frontend/) + 리버스 프록시(컨테이너 80, 호스트 기본 8085)
     - / → 정적 페이지(index.html 등)
     - /api/* → Spring(컨테이너 8080 → 호스트 기본 8081)
     - /ai/chat → ai-chatbot(:8001)/chat
@@ -98,7 +98,7 @@ docker compose logs -f ai-chatbot
 
 모든 포트는 `.env`로 조정할 수 있습니다. 기본값은 `.env.example` 참고.
 본 저장소의 기본 설정은 다음과 같습니다(호스트 기준):
-- NGINX_PORT=8080 (정적 웹/리버스 프록시)
+- NGINX_PORT=8085 (정적 웹/리버스 프록시)
 - SPRING_PORT=8081 (Spring Boot)
 - AI_PORT=8000 (ai-vision)
 
@@ -108,7 +108,7 @@ docker compose logs -f ai-chatbot
 
 - 공통
     - ENV=dev, TZ=Asia/Seoul
-    - NGINX_PORT=8080, SPRING_PORT=8081, AI_PORT=8000, AI_CHATBOT_PORT=8001
+    - NGINX_PORT=8085, SPRING_PORT=8081, AI_PORT=8000, AI_CHATBOT_PORT=8001
 - Spring → AI 내부 호출 URL
     - AI_BASE_URL=http://ai-vision:8000
 - AI Vision(이미지 분류)
@@ -120,7 +120,7 @@ docker compose logs -f ai-chatbot
     - OPENAI_API_KEY= (필요 시 입력)
     - OPENAI_MODEL=gpt-4o-mini
 
-모든 항목의 예시는 `.env.example`를 확인하세요. Windows에서 8080은 종종 다른 프로세스(예: Oracle TNS Listener)가 사용 중일 수 있어 충돌 시 `NGINX_PORT`를 다른 값(예: 8085)으로 변경하세요.
+모든 항목의 예시는 `.env.example`를 확인하세요. Windows에서 8080은 종종 다른 프로세스(예: Oracle TNS Listener)가 사용 중일 수 있어 충돌 시 `NGINX_PORT`를 다른 값(예: 8086, 8090 등)으로 변경하세요. 기본값은 8085입니다.
 
 ---
 
@@ -174,7 +174,7 @@ docker compose logs -f ai-chatbot
 ## 트러블슈팅 요약
 
 - 502 Bad Gateway: 대상 서비스 컨테이너 상태 및 로그 확인 → 재시작
-- 8000/8080/8081 포트 충돌: `.env`에서 포트 변경 후 재시작
+- 8000/8081/8085 포트 충돌: `.env`에서 포트 변경 후 재시작
 - OpenAI 오류: `OPENAI_API_KEY` 설정 여부, 요청량 및 네트워크 점검
 
 ### Windows에서 8080(또는 특정 포트) 충돌 해결
