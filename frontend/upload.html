@@ -73,7 +73,7 @@
             const form = new FormData();
             form.append('image', selectedFile);
             try{
-                const resp = await fetch(`${AI_BASE}/classify`, { method: 'POST', body: form });
+                const resp = await fetch(`${AI_BASE}/classify?top_k=3`, { method: 'POST', body: form });
                 if (!resp.ok) throw new Error('분석 요청 실패');
                 const data = await resp.json();
                 sessionStorage.setItem('classifyResult', JSON.stringify(data));

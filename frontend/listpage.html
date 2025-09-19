@@ -7,26 +7,39 @@
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
         html, body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #FFFBF5; display: flex; justify-content: center; padding-top: 40px; padding-bottom: 40px; }
-        .screen-container { background-color: white; border-radius: 20px; padding: 30px 20px; width: 100%; max-width: 380px; box-sizing: border-box; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07); }
+    .screen-container { background-color: white; border-radius: 20px; padding: 30px 20px; width: 100%; max-width: 420px; box-sizing: border-box; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07); position: relative; }
         .header-title { font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 25px; color: #333; }
-        .result-card { background-color: #ffffff; border: 1px solid #eee; border-radius: 18px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06); overflow: hidden; transition: transform 0.2s ease-in-out; }
-        .result-card:hover { transform: translateY(-5px); }
-        .result-card img { width: 100%; height: 250px; object-fit: cover; }
-        .card-content { padding: 20px; }
+    .slider-wrapper { overflow: hidden; position: relative; }
+    .slider-track { display: flex; transition: transform 0.45s ease; }
+    .result-card { flex: 0 0 100%; background-color: #ffffff; border: 1px solid #eee; border-radius: 18px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06); overflow: hidden; }
+    .result-card img { width: 100%; height: 250px; object-fit: cover; }
+    .card-content { padding: 20px; position: relative; }
         .card-content h3 { margin: 0 0 15px 0; font-size: 22px; font-weight: bold; text-align: center; }
         .similarity-score { background-color: #FFF5E1; border-radius: 10px; padding: 12px; font-weight: bold; text-align: center; margin-bottom: 18px; font-size: 16px; }
         .similarity-score .label { font-size: 13px; font-weight: 500; display: block; margin-top: 4px; }
         .matching-points { font-size: 14px; text-align: center; margin-bottom: 20px; background-color: #f7f7f7; padding: 12px; border-radius: 10px; }
         .matching-points strong { display: block; margin-bottom: 8px; font-size: 15px; }
         .matching-points .tag { background-color: #e7e7e7; border-radius: 5px; padding: 4px 10px; font-size: 13px; font-weight: 500; margin: 0 3px; display: inline-block; }
-        .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; background-color: #FF7A00; color: white; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
-        .btn:hover { background-color: #E66A00; }
+    .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; background-color: #FF7A00; color: white; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
+    .btn:hover { background-color: #E66A00; }
+    .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.85); border: 1px solid #ddd; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .nav-btn:hover { background: #fff; }
+    .nav-prev { left: -15px; }
+    .nav-next { right: -15px; }
+    .dots { text-align: center; margin: 8px 0 18px; }
+    .dots button { width: 10px; height: 10px; margin: 0 4px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; }
+    .dots button.active { background: #FF7A00; }
     </style>
 </head>
 <body>
     <div class="screen-container">
         <h1 class="header-title">AI가 찾아준<br>당신의 운명적인 친구들이에요!</h1>
-        <div id="result-container"></div>
+        <div class="slider-wrapper">
+            <div id="slider-track" class="slider-track"></div>
+            <div class="nav-btn nav-prev" id="prevBtn" style="display:none;">‹</div>
+            <div class="nav-btn nav-next" id="nextBtn" style="display:none;">›</div>
+        </div>
+        <div class="dots" id="dots"></div>
     </div>
 
     <script>
@@ -40,51 +53,80 @@
             return '';
         }
         async function load(){
-            const wrap = document.getElementById('result-container');
-            wrap.innerHTML = '';
+            const track = document.getElementById('slider-track');
+            const dotsWrap = document.getElementById('dots');
+            track.innerHTML='';
+            dotsWrap.innerHTML='';
             const res = await fetch(`${AI_BASE}/animals`);
             const animals = await res.json();
 
-            // If classifyResult exists, try to pick a best match by breed name
-            let best = animals[0];
-            let simText = '닮은꼴 지수 70% !';
-            let simLabel = 'AI 분석에 기반한 추천입니다.';
-            try{
-                const cls = JSON.parse(sessionStorage.getItem('classifyResult')||'null');
-                if (cls && Array.isArray(cls.top) && cls.top.length>0){
-                    const topBreed = cls.top[0];
-                    simText = `닮은꼴 지수 ${(cls.probs && cls.probs[0] ? Math.round(cls.probs[0]*100) : 76)}% !`;
-                    simLabel = `${topBreed} 특성을 중심으로 추천했어요.`;
-                    const idx = animals.findIndex(a => (findField(a.info,'품종')||'').includes(topBreed));
-                    if (idx >= 0) best = animals[idx];
-                }
-            }catch{ /* ignore */ }
+            let chosen = [];
+            let cls, simMap = {};
+            try { cls = JSON.parse(sessionStorage.getItem('classifyResult')||'null'); } catch {}
+            if (cls && Array.isArray(cls.top)){
+                cls.top.forEach((breedLabel, idx)=>{
+                    const percent = cls.scores && cls.scores[idx] != null ? Math.round(cls.scores[idx]) : (cls.probs && cls.probs[breedLabel] ? Math.round(cls.probs[breedLabel]) : 0);
+                    simMap[breedLabel] = percent;
+                    const match = animals.find(a => (findField(a.info,'품종')||'').includes(breedLabel));
+                    if (match && !chosen.some(c=>c.id===match.id)) chosen.push(match);
+                });
+            }
+            if (chosen.length === 0) chosen = animals.slice(0,1); // fallback
+            chosen = chosen.slice(0,3);
 
-            const name = findField(best.info,'이름') || '이름 미상';
-            const breed = findField(best.info,'품종') || '품종 미상';
-            const age = findField(best.info,'나이(추정)') || '';
-            const gender = findField(best.info,'성별') || '';
-            const img = best.thumbnail || (best.gallery && best.gallery[0]) || (best.images_mapped && best.images_mapped[0]) || (best.images && best.images[0]) || '';
-            const card = document.createElement('div');
-            card.className = 'result-card';
-            card.innerHTML = `
-                <img src="${img}" alt="강아지 사진" onerror="this.onerror=null; this.src='/assets/dog-placeholder.svg'">
-                <div class="card-content">
-                    <h3>${name} (${age?age+', ':''}${breed}${gender?`, ${gender}`:''})</h3>
-                    <div class="similarity-score" style="background-color:#E6F0FF;">✨ ${simText}<span class="label">${simLabel}</span></div>
-                    <div class="matching-points">
-                        <strong>✔️ 체크리스트 매칭 포인트</strong>
-                        <div>
-                            <span class="tag">#활동량 적당</span>
-                            <span class="tag">#가족친화</span>
+            chosen.forEach((dog, idx)=>{
+                const name = findField(dog.info,'이름') || '이름 미상';
+                const breed = findField(dog.info,'품종') || '품종 미상';
+                const age = findField(dog.info,'나이(추정)') || '';
+                const gender = findField(dog.info,'성별') || '';
+                const img = dog.thumbnail || (dog.gallery && dog.gallery[0]) || (dog.images_mapped && dog.images_mapped[0]) || (dog.images && dog.images[0]) || '';
+                const simPercent = simMap[breed] != null ? simMap[breed] : (idx===0?80:'');
+                const simText = simPercent?`닮은꼴 지수 ${simPercent}% !`:'AI 추천';
+                const simLabel = cls && cls.top ? (cls.top.length>1?`Top${cls.top.length} 후보 중 ${idx+1}위`:`${breed} 기반 추천`) : 'AI 분석 기반';
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <img src="${img}" alt="강아지 사진" onerror="this.onerror=null; this.src='/assets/dog-placeholder.svg'">
+                    <div class="card-content">
+                        <h3>${name} (${age?age+', ':''}${breed}${gender?`, ${gender}`:''})</h3>
+                        <div class="similarity-score" style="background-color:#E6F0FF;">✨ ${simText}<span class="label">${simLabel}</span></div>
+                        <div class="matching-points">
+                            <strong>✔️ 체크리스트 매칭 포인트</strong>
+                            <div>
+                                <span class="tag">#활동량</span>
+                                <span class="tag">#성격</span>
+                            </div>
                         </div>
-                    </div>
-                    <button class="btn" id="chat-btn">${name}와 대화해보기 💬</button>
-                </div>`;
-            wrap.appendChild(card);
-            document.getElementById('chat-btn').addEventListener('click', ()=>{
-                window.location.href = `/chatbot.html?id=${best.id}`;
+                        <button class="btn chat-btn">${name}와 대화해보기 💬</button>
+                    </div>`;
+                track.appendChild(card);
+                card.querySelector('.chat-btn').addEventListener('click', ()=>{
+                    window.location.href = `/chatbot.html?id=${dog.id}`;
+                });
             });
+
+            // Dots & nav
+            const total = track.children.length;
+            if (total > 1){
+                for (let i=0;i<total;i++){
+                    const b=document.createElement('button');
+                    if (i===0) b.classList.add('active');
+                    b.addEventListener('click', ()=>goTo(i));
+                    dotsWrap.appendChild(b);
+                }
+                document.getElementById('prevBtn').style.display='flex';
+                document.getElementById('nextBtn').style.display='flex';
+            }
+
+            let current = 0;
+            function update(){
+                track.style.transform = `translateX(-${current*100}%)`;
+                [...dotsWrap.children].forEach((d,i)=>{ d.classList.toggle('active', i===current); });
+            }
+            function goTo(i){ current = (i+total)%total; update(); }
+            document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
+            document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+            update();
         }
         document.addEventListener('DOMContentLoaded', load);
     </script>

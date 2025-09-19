@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import List, Optional
 
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -124,12 +124,12 @@ def get_image(filename: str):
 
 
 @app.post("/classify")
-async def classify(image: UploadFile = File(...)):
+async def classify(image: UploadFile = File(...), top_k: int = Query(3, ge=1, le=20)):
     ensure_model_loaded()
     tmp = APP_DIR / "_upload_tmp"
     tmp.mkdir(exist_ok=True)
     out_path = tmp / image.filename
     data = await image.read()
     out_path.write_bytes(data)
-    labels, probs = predict_image(str(out_path), _model, _device, _label_names)
-    return {"top": labels, "probs": probs}
+    labels, probs, scores = predict_image(str(out_path), _model, _device, _label_names, top_k=top_k)
+    return {"top": labels, "scores": scores, "probs": probs}
