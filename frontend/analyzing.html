@@ -45,7 +45,8 @@
         ];
         let idx = 0;
         setInterval(()=>{ idx = (idx+1)%dogImages.length; dogPhotoElement.src = dogImages[idx]; }, 1000);
-        setTimeout(()=>{ window.location.href = '/listpage.html'; }, 3600);
+    // Redirect to list page with cache-busting version parameter
+    setTimeout(()=>{ window.location.href = '/listpage.html?v=3'; }, 3600);
     </script>
 </body>
 </html>

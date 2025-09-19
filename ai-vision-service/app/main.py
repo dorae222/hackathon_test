@@ -9,6 +9,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from .model import load_model, predict_image
+import logging
+logger = logging.getLogger(__name__)
 
 APP_DIR = Path(__file__).resolve().parent
 DATA_DIR = APP_DIR.parent / "data"
@@ -132,4 +134,5 @@ async def classify(image: UploadFile = File(...), top_k: int = Query(3, ge=1, le
     data = await image.read()
     out_path.write_bytes(data)
     labels, probs, scores = predict_image(str(out_path), _model, _device, _label_names, top_k=top_k)
+    logger.info(f"/classify top_k={top_k} -> returned {len(labels)} labels: {labels[:5]}")
     return {"top": labels, "scores": scores, "probs": probs}

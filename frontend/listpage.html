@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 추천 결과 - 나의 운명의 강아지 찾기</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
         html, body { margin: 0; font-family: 'Pretendard', sans-serif; background-color: #FFFBF5; display: flex; justify-content: center; padding-top: 40px; padding-bottom: 40px; }
@@ -22,24 +25,40 @@
         .matching-points .tag { background-color: #e7e7e7; border-radius: 5px; padding: 4px 10px; font-size: 13px; font-weight: 500; margin: 0 3px; display: inline-block; }
     .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; background-color: #FF7A00; color: white; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
     .btn:hover { background-color: #E66A00; }
-    .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.85); border: 1px solid #ddd; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .nav-btn:hover { background: #fff; }
-    .nav-prev { left: -15px; }
-    .nav-next { right: -15px; }
-    .dots { text-align: center; margin: 8px 0 18px; }
-    .dots button { width: 10px; height: 10px; margin: 0 4px; border-radius: 50%; border: none; background: #ddd; cursor: pointer; }
-    .dots button.active { background: #FF7A00; }
+    /* Navigation controls repositioned below slider to avoid overlapping image */
+    .slider-controls { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 12px 0 18px; }
+    .nav-btn { position: static; transform: none; background: #ffffff; border: 1px solid #ddd; width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: background-color .18s, border-color .18s; }
+    .nav-btn:hover { background: #FF7A00; color: #fff; border-color: #FF7A00; }
+    .dots { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .dots button { width: 10px; height: 10px; border-radius: 50%; border: none; background: #d4d4d4; cursor: pointer; transition: background-color .25s, transform .25s; }
+    .dots button.active { background: #FF7A00; transform: scale(1.2); }
+    @media (max-width: 430px){
+        .nav-btn { width:36px; height:36px; font-size:18px; }
+    }
     </style>
 </head>
 <body>
+    <script>
+        // Auto-append ?v=3 for cache busting if no query provided
+        (function(){
+            try {
+                if (!window.location.search) {
+                    const target = window.location.pathname + '?v=3';
+                    window.history.replaceState(null,'', target);
+                }
+            } catch(e) { console.warn('[AI][WARN] version query append failed', e); }
+        })();
+    </script>
     <div class="screen-container">
         <h1 class="header-title">AI가 찾아준<br>당신의 운명적인 친구들이에요!</h1>
         <div class="slider-wrapper">
             <div id="slider-track" class="slider-track"></div>
-            <div class="nav-btn nav-prev" id="prevBtn" style="display:none;">‹</div>
-            <div class="nav-btn nav-next" id="nextBtn" style="display:none;">›</div>
         </div>
-        <div class="dots" id="dots"></div>
+        <div class="slider-controls">
+            <button class="nav-btn nav-prev" id="prevBtn" style="display:none;" aria-label="이전">‹</button>
+            <div class="dots" id="dots" aria-label="슬라이드 위치 표시"></div>
+            <button class="nav-btn nav-next" id="nextBtn" style="display:none;" aria-label="다음">›</button>
+        </div>
     </div>
 
     <script>
@@ -52,37 +71,36 @@
             }
             return '';
         }
-        async function load(){
+        function renderCards(chosen, simMap, cls){
             const track = document.getElementById('slider-track');
             const dotsWrap = document.getElementById('dots');
+            const norm = s => (s||'').toString().trim().toLowerCase().replace(/\s+/g,'');
             track.innerHTML='';
             dotsWrap.innerHTML='';
-            const res = await fetch(`${AI_BASE}/animals`);
-            const animals = await res.json();
-
-            let chosen = [];
-            let cls, simMap = {};
-            try { cls = JSON.parse(sessionStorage.getItem('classifyResult')||'null'); } catch {}
-            if (cls && Array.isArray(cls.top)){
-                cls.top.forEach((breedLabel, idx)=>{
-                    const percent = cls.scores && cls.scores[idx] != null ? Math.round(cls.scores[idx]) : (cls.probs && cls.probs[breedLabel] ? Math.round(cls.probs[breedLabel]) : 0);
-                    simMap[breedLabel] = percent;
-                    const match = animals.find(a => (findField(a.info,'품종')||'').includes(breedLabel));
-                    if (match && !chosen.some(c=>c.id===match.id)) chosen.push(match);
-                });
-            }
-            if (chosen.length === 0) chosen = animals.slice(0,1); // fallback
             chosen = chosen.slice(0,3);
-
             chosen.forEach((dog, idx)=>{
-                const name = findField(dog.info,'이름') || '이름 미상';
-                const breed = findField(dog.info,'품종') || '품종 미상';
-                const age = findField(dog.info,'나이(추정)') || '';
-                const gender = findField(dog.info,'성별') || '';
-                const img = dog.thumbnail || (dog.gallery && dog.gallery[0]) || (dog.images_mapped && dog.images_mapped[0]) || (dog.images && dog.images[0]) || '';
-                const simPercent = simMap[breed] != null ? simMap[breed] : (idx===0?80:'');
-                const simText = simPercent?`닮은꼴 지수 ${simPercent}% !`:'AI 추천';
-                const simLabel = cls && cls.top ? (cls.top.length>1?`Top${cls.top.length} 후보 중 ${idx+1}위`:`${breed} 기반 추천`) : 'AI 분석 기반';
+                let name, breed, age='', gender='', img='';
+                let simPercent, simLabel, simText;
+                if (dog.placeholder) {
+                    breed = dog.breedLabel;
+                    name = `${breed} 후보`;
+                    img = '/assets/dog-placeholder.svg';
+                    simPercent = dog.score;
+                    simText = `닮은꼴 지수 ${simPercent}% !`;
+                    simLabel = `현재 보호소 목록에 ${breed} 없음 (유사 품종 추천)`;
+                } else {
+                    name = findField(dog.info,'이름') || '이름 미상';
+                    breed = findField(dog.info,'품종') || '품종 미상';
+                    age = findField(dog.info,'나이(추정)') || '';
+                    gender = findField(dog.info,'성별') || '';
+                    img = dog.thumbnail || (dog.gallery && dog.gallery[0]) || (dog.images_mapped && dog.images_mapped[0]) || (dog.images && dog.images[0]) || '';
+                    const originalBreedKey = Object.keys(simMap).find(k => norm(k) === norm(breed));
+                    simPercent = originalBreedKey ? simMap[originalBreedKey] : (idx===0 ? 80 : '');
+                    simText = simPercent !== '' ? `닮은꼴 지수 ${simPercent}% !` : 'AI 추천';
+                    simLabel = (cls && cls.top && cls.top.length > 1)
+                        ? `Top${cls.top.length} 후보 중 ${idx+1}위`
+                        : (cls && cls.top && cls.top.length === 1 ? `${cls.top[0]} 기반 추천` : 'AI 분석 기반');
+                }
                 const card = document.createElement('div');
                 card.className = 'result-card';
                 card.innerHTML = `
@@ -97,38 +115,156 @@
                                 <span class="tag">#성격</span>
                             </div>
                         </div>
-                        <button class="btn chat-btn">${name}와 대화해보기 💬</button>
+                        ${dog.placeholder ? '' : `<button class="btn chat-btn">${name}와 대화해보기 💬</button>`}
                     </div>`;
                 track.appendChild(card);
-                card.querySelector('.chat-btn').addEventListener('click', ()=>{
-                    window.location.href = `/chatbot.html?id=${dog.id}`;
-                });
+                if (!dog.placeholder) {
+                    card.querySelector('.chat-btn').addEventListener('click', ()=>{
+                        window.location.href = `/chatbot.html?id=${dog.id}`;
+                    });
+                }
             });
-
-            // Dots & nav
             const total = track.children.length;
             if (total > 1){
                 for (let i=0;i<total;i++){
                     const b=document.createElement('button');
                     if (i===0) b.classList.add('active');
-                    b.addEventListener('click', ()=>goTo(i));
+                    b.addEventListener('click', ()=>{ current=i; update(); });
                     dotsWrap.appendChild(b);
                 }
                 document.getElementById('prevBtn').style.display='flex';
                 document.getElementById('nextBtn').style.display='flex';
             }
-
-            let current = 0;
+            var current = 0;
             function update(){
                 track.style.transform = `translateX(-${current*100}%)`;
                 [...dotsWrap.children].forEach((d,i)=>{ d.classList.toggle('active', i===current); });
             }
-            function goTo(i){ current = (i+total)%total; update(); }
-            document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
-            document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+            document.getElementById('prevBtn').onclick = ()=>{ current = (current-1+total)%total; update(); };
+            document.getElementById('nextBtn').onclick = ()=>{ current = (current+1)%total; update(); };
             update();
         }
-        document.addEventListener('DOMContentLoaded', load);
+        function buildFromClassifyOnly(){
+            let cls=null; try{cls=JSON.parse(sessionStorage.getItem('classifyResult')||'null');}catch{}
+            if(!cls||!Array.isArray(cls.top)){console.warn('[AI][FALLBACK] classifyResult missing');return;}
+            const simMap={};
+            cls.top.forEach((b,i)=>{const percent=cls.scores&&cls.scores[i]!=null?Math.round(cls.scores[i]):0;simMap[b]=percent;});
+            const placeholders = cls.top.slice(0,3).map((b,i)=>({id:`only-${i}`,placeholder:true,breedLabel:b,score:simMap[b]}));
+            renderCards(placeholders, simMap, cls);
+        }
+        async function load(){
+            console.log('[AI][INFO] load() start');
+            const track = document.getElementById('slider-track');
+            const dotsWrap = document.getElementById('dots');
+            track.innerHTML='';
+            dotsWrap.innerHTML='';
+            const res = await fetch(`${AI_BASE}/animals`);
+            let animals=[];
+            try {
+                animals = await res.json();
+            } catch(e){
+                console.error('[AI][ERROR] animals json parse failed', e);
+            }
+            console.log('[AI][DEBUG] animals length:', animals.length);
+
+            let chosen = [];
+            let cls, simMap = {};
+            try { cls = JSON.parse(sessionStorage.getItem('classifyResult')||'null'); } catch {}
+            console.log('[AI][DEBUG] classifyResult:', cls);
+
+            const norm = s => (s||'').toString().trim().toLowerCase().replace(/\s+/g,'');
+
+            const placeholders = [];
+            if (cls && Array.isArray(cls.top)) {
+                cls.top.forEach((breedLabel, idx) => {
+                    const percent = cls.scores && cls.scores[idx] != null ? Math.round(cls.scores[idx]) : (cls.probs && cls.probs[breedLabel] ? Math.round(cls.probs[breedLabel]) : 0);
+                    simMap[breedLabel] = percent;
+                    const match = animals.find(a => norm(findField(a.info,'품종')).includes(norm(breedLabel)));
+                    if (match && !chosen.some(c => c.id === match.id)) {
+                        chosen.push(match);
+                    } else if (!match) {
+                        // Breed not present in current 보호소 데이터: placeholder 생성
+                        placeholders.push({
+                            id: `placeholder-${idx}`,
+                            placeholder: true,
+                            breedLabel,
+                            score: percent
+                        });
+                    }
+                });
+            }
+
+            // Fallback / Fill to 3
+            if (chosen.length === 0 && placeholders.length === 0) {
+                console.log('[AI][DEBUG] No breed matches and no placeholders. Using first 3 animals as fallback.');
+                chosen = animals.slice(0,3);
+            }
+            // 우선 실제 매칭된 chosen, 그 다음 placeholder, 그 다음 다른 동물로 채움
+            while (chosen.length < 3 && placeholders.length) {
+                const ph = placeholders.shift();
+                chosen.push(ph);
+            }
+            if (chosen.length < 3) {
+                console.log(`[AI][DEBUG] Filling remaining slots with other animals. Current=${chosen.length}`);
+                for (const dog of animals) {
+                    if (!chosen.some(c => c.id === dog.id)) chosen.push(dog);
+                    if (chosen.length === 3) break;
+                }
+            }
+            if (chosen.length === 1) {
+                console.warn('[AI][WARN] Still only one card after fill logic. Forcing two placeholder injections.');
+                const needed = 3 - chosen.length;
+                for (let i=0;i<needed;i++) {
+                    chosen.push({ id:`force-ph-${i}`, placeholder:true, breedLabel: cls && cls.top ? (cls.top[i+1]||`추가후보${i+1}`) : `추가후보${i+1}`, score: (cls && cls.scores && cls.scores[i+1]!=null) ? Math.round(cls.scores[i+1]) : 50 });
+                }
+            }
+            chosen = chosen.slice(0,3); // ensure max 3
+
+            renderCards(chosen, simMap, cls);
+
+            // Dots & nav
+            if (document.querySelectorAll('#slider-track .result-card').length === 0){
+                console.warn('[AI][FALLBACK] No cards rendered after renderCards(). Building from classify only.');
+                buildFromClassifyOnly();
+            }
+
+            // 최종 안전장치: 혹시라도 한 장만 렌더되면 즉석에서 2개 더 생성
+            const finalCount = document.querySelectorAll('#slider-track .result-card').length;
+            if (finalCount === 1) {
+                console.warn('[AI][SAFEGUARD] Only one card after all logic. Injecting two debug placeholders.');
+                for (let i=2;i<=3;i++) {
+                    const ph = document.createElement('div');
+                    ph.className = 'result-card';
+                    ph.innerHTML = `
+                        <img src="/assets/dog-placeholder.svg" alt="placeholder">
+                        <div class="card-content">
+                            <h3>디버그 카드 ${i} (임시)</h3>
+                            <div class="similarity-score" style="background-color:#E6F0FF;">✨ 테스트<span class="label">강제 생성된 카드</span></div>
+                            <div class="matching-points"><strong>✔️ 디버그</strong><div><span class="tag">#placeholder</span></div></div>
+                        </div>`;
+                    track.appendChild(ph);
+                }
+                // 네비/도트 다시 구성
+                dotsWrap.innerHTML = '';
+                const total2 = document.querySelectorAll('#slider-track .result-card').length;
+                if (total2 > 1){
+                    document.getElementById('prevBtn').style.display='flex';
+                    document.getElementById('nextBtn').style.display='flex';
+                    for (let i=0;i<total2;i++){
+                        const b=document.createElement('button');
+                        if (i===0) b.classList.add('active');
+                        b.addEventListener('click', ()=>{ current=i; update(); });
+                        dotsWrap.appendChild(b);
+                    }
+                    update();
+                }
+            }
+        }
+        document.addEventListener('DOMContentLoaded', ()=>{
+            try { load(); } catch(e){ console.error('[AI][FATAL] load() crashed', e); buildFromClassifyOnly(); }
+        });
+        // 수동 트리거를 위해 전역에 노출
+        window.__AI_FORCE_RENDER = buildFromClassifyOnly;
     </script>
 </body>
 </html>
